@@ -6,8 +6,32 @@ namespace Freetils {
         qInfo() << "FbDeployer";
     }
 
-    bool FbDeployer::serve(QString fbxIp)
+    FbDeployer::~FbDeployer()
     {
-
+        workerThread.quit();
+        workerThread.wait();
     }
+
+    void FbDeployer::serve(QString fbxIp)
+    {
+        qDebug() << fbxIp;
+
+        Server* server = new Server(this, m_LocalPort);
+
+        server->moveToThread(&workerThread);
+
+        connect(&workerThread, &QThread::finished, server, &QObject::deleteLater);
+        connect(this, &FbDeployer::operate, server, &Server::start);
+        connect(server, &Server::resultReady, this, &FbDeployer::handleResults);
+
+        workerThread.start();
+
+        emit operate();
+    }
+
+    void FbDeployer::handleResults(const QString &)
+    {
+        qDebug() << "handle Results";
+    }
+
 }

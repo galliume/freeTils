@@ -1,7 +1,7 @@
 #ifndef FBDEPLOYER_H
 #define FBDEPLOYER_H
 
-#include "crow.h"
+#include "server.h"
 
 #include <QObject>
 #include <QDebug>
@@ -12,15 +12,19 @@
 #include <QtRemoteObjects>
 #include <QTcpServer>
 #include <QTextStream>
+#include <QThread>
 
 namespace Freetils {
     class FbDeployer : public QObject
     {
         Q_OBJECT
+        QThread workerThread;
+
     public:
         explicit FbDeployer(QObject *parent = nullptr);
+        ~FbDeployer();
 
-        Q_INVOKABLE bool serve(QString fbxIp);
+        Q_INVOKABLE void serve(QString fbxIp);
 
     private:
         const quint16 m_LocalPort = 9000;
@@ -31,10 +35,10 @@ namespace Freetils {
         QTcpServer* m_TcpServer;
 
     public slots:
-        void handle(QHttpRequest *req, QHttpResponse *resp);
+        void handleResults(const QString &);
 
     signals:
-
+        void operate();
     };
 }
 #endif // FBDEPLOYER_H

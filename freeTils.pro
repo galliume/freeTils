@@ -11,14 +11,13 @@ DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs depr
 
 SOURCES += \
         main.cpp \
+        src/client.cpp \
         src/fbdeployer.cpp \
-        src/fbdetector.cpp
+        src/fbdetector.cpp \
+        src/server.cpp
 
 RESOURCES += \
     qml.qrc
-
-LIBS += -Lvendor/boost/boost
-INCLUDEPATH += vendor/crow/include
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
@@ -32,5 +31,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
+    src/client.h \
     src/fbdeployer.h \
-    src/fbdetector.h
+    src/fbdetector.h \
+    src/server.h
