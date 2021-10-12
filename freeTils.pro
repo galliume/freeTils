@@ -1,6 +1,7 @@
 QT += quick
 QT += network
 QT += core
+QT += remoteobjects
 
 CONFIG += c++2a
 
@@ -15,6 +16,9 @@ SOURCES += \
 
 RESOURCES += \
     qml.qrc
+
+LIBS += -Lvendor/boost/boost
+INCLUDEPATH += vendor/crow/include
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =

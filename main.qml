@@ -3,6 +3,7 @@ import QtQuick.Window 2.15
 import QtQuick.Controls 2.12
 
 import com.gcconantc.FbDetector 1.0
+import com.gcconantc.FbDeployer 1.0
 
 Window {
     width: 640
@@ -12,6 +13,10 @@ Window {
 
     FbDetector {
         id: fbDetect
+    }
+
+    FbDeployer {
+        id: fbDeploy
     }
 
     Component.onCompleted: {
@@ -73,7 +78,7 @@ Window {
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
-                            console.log("clicked " + ip)
+                            fbDeploy.serve(ip);
                         }
                     }
                 }

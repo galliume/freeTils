@@ -118,7 +118,6 @@ namespace Freetils {
         }
     }
 
-
     void FbDetector::listenerReceived()
     {
         qInfo() << "Reading pending datagrams from listener";
@@ -165,7 +164,6 @@ namespace Freetils {
             }
         }
     }
-
 
     void FbDetector::senderStateChanged(QAbstractSocket::SocketState state)
     {
