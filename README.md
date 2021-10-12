@@ -1,10 +1,10 @@
 # freeTils
-Utils to ease develpment with freebox
+Utils to ease development with freebox.
 
 @todo
-- detect freebox on network
-- connect to freebox via socket
-- display logs
-- deploy app to the freebox
-- control the app via remote keyboard
-- see if hot reload is possible ?
+- [x] auto detect freebox on network (done but still instable)
+- [ ] connect to freebox via socket
+- [ ] display logs
+- [ ] deploy app to the freebox
+- [ ] control the app via remote keyboard
+- [ ] see if hot reload is possible ?
