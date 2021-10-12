@@ -6,15 +6,15 @@ namespace Freetils {
         qInfo() << "FbDetector";
     }
 
-    void FbDetector::Scan()
+    void FbDetector::scan()
     {
 
         if (QNetworkInterface::IsRunning) {
-            QList<QNetworkInterface>netInf = QNetworkInterface::allInterfaces();
+            const QList<QNetworkInterface>netInf = QNetworkInterface::allInterfaces();
 
-            for (QNetworkInterface& interface : netInf) {
+            for (const QNetworkInterface& interface : netInf) {
 
-                QNetworkInterface::InterfaceFlags flags = interface.flags();
+                const QNetworkInterface::InterfaceFlags flags = interface.flags();
 
                 if (!(flags & QNetworkInterface::IsUp) ||
                     !(flags & QNetworkInterface::IsRunning) ||
@@ -23,7 +23,16 @@ namespace Freetils {
                     !(flags & QNetworkInterface::CanMulticast))
                     continue;
 
-                 qInfo() << "interface " << interface.name();
+                if (!interface.isValid()) {
+                    qDebug("interface not valid");
+                    return;
+                }
+
+                 if ("enp3s0f1" == interface.name()) {
+                     continue;
+                 }
+
+                qInfo() << "interface " << interface.name();
 
                  QUdpSocket* socketListener = new QUdpSocket(this);
 
@@ -34,6 +43,7 @@ namespace Freetils {
                    }
 
                  socketListener->setMulticastInterface(interface);
+
                  if (!socketListener->joinMulticastGroup(QHostAddress(QLatin1String(m_ADDR4)), interface)) {
                     qWarning() << "failed to join multicast " << interface << ":" << socketListener->errorString();
                  }
@@ -41,16 +51,12 @@ namespace Freetils {
                  connect(socketListener, &QUdpSocket::stateChanged, this, &FbDetector::listenerStateChanged);
                  connect(socketListener,  &QUdpSocket::readyRead, this, &FbDetector::listenerReceived);
 
-                 QPair<QUdpSocket*, QNetworkInterface*>listenerPair;
+                 QPair<QUdpSocket*, const QNetworkInterface*>listenerPair;
                  listenerPair.first = socketListener;
                  listenerPair.second = &interface;
 
-                 m_SocketListener << listenerPair;
+                 m_SocketListener.append(listenerPair);
 
-                if (!interface.isValid()) {
-                    qDebug("interface not valid");
-                    return;
-                }
 
                 for (const QNetworkAddressEntry& entry : interface.addressEntries())
                 {
@@ -63,14 +69,18 @@ namespace Freetils {
                         QUdpSocket* socketSender = new QUdpSocket(this);
                         socketSender->setProxy(QNetworkProxy::NoProxy);
 
-                        QPair<QUdpSocket*, QNetworkInterface*>senderPair;
+                        if (!socketSender->bind(address)) {
+                            qWarning() << "can't bind : " << socketSender->errorString();
+                        }
+
+                        QPair<QUdpSocket*, const QNetworkInterface*>senderPair;
                         senderPair.first = socketSender;
                         senderPair.second = &interface;
 
                         connect(socketSender, &QUdpSocket::stateChanged, this, &FbDetector::senderStateChanged);
                         connect(socketSender,  &QUdpSocket::readyRead, this, &FbDetector::senderReceived);
 
-                        m_SocketSender << senderPair;
+                        m_SocketSender.append(senderPair);
                     }
                 }
             }
@@ -78,46 +88,33 @@ namespace Freetils {
 
         for (auto sender : m_SocketSender) {
 
-            sender.first->setProxy(QNetworkProxy::NoProxy);
+            for (auto networkAddress : sender.second->allAddresses()) {
 
-            foreach(const QNetworkAddressEntry networkAddress, sender.second->addressEntries()) {
-
-                const QHostAddress hostAddress = networkAddress.ip();
-
-                if ("127.0.0.1" == hostAddress.toString()|| hostAddress.protocol() != QAbstractSocket::IPv4Protocol) {
-                    qDebug() << "local or not ipv4 " << hostAddress.toString();
+                if ("127.0.0.1" == networkAddress.toString() || networkAddress.protocol() != QAbstractSocket::IPv4Protocol) {
+                    qDebug() << "local or not ipv4 " << networkAddress.toString();
                     continue;
                 }
 
-                qDebug() <<"binding to " << hostAddress.toString();
+                sender.first->setMulticastInterface(*sender.second);
+                qDebug() << "sending to : " << networkAddress.toString();
 
-                if (!sender.first->bind(hostAddress)) {
-                    qWarning() << "can't bind : " << sender.first->errorString();
-                } else {
+                QString message;
 
-                    sender.first->setMulticastInterface(*sender.second);
-                    qDebug() << hostAddress.toString();
+                message = QStringLiteral("M-SEARCH * HTTP/1.1\r\n");
+                message += QString::fromLocal8Bit("HOST: %1:%2\r\n")
+                    .arg(QLatin1String(m_ADDR4))
+                    .arg(QString::number(m_Port));
+                message += QStringLiteral("MAN: \"ssdp:discover\"\r\n");
+                message += QStringLiteral("MX: 1\r\n");
+                message += QString::fromLocal8Bit("ST: %1\r\n").arg(m_FbNt);
+                message += QStringLiteral("\r\n");
 
-                    QString message;
+                qint64 success = sender.first->writeDatagram(message.toLatin1().constData(), message.size(),
+                QHostAddress(QLatin1String(m_ADDR4)), m_Port);
 
-                    message = QStringLiteral("M-SEARCH * HTTP/1.1\r\n");
-                    message += QString::fromLocal8Bit("HOST: %1:%2\r\n")
-                        .arg(QLatin1String(m_ADDR4))
-                        .arg(QString::number(m_Port));
-                    message += QStringLiteral("MAN: \"ssdp:discover\"\r\n");
-                    message += QStringLiteral("MX: 1\r\n");
-                    message += QString::fromLocal8Bit("ST: %1\r\n").arg("fromHere");
-                    message += QStringLiteral("\r\n");
-
-                    qint64 success = sender.first->writeDatagram(message.toLatin1().constData(), message.size(),
-                    QHostAddress(QLatin1String(m_ADDR4)), m_Port);
-
-                    qInfo() << "Bytes sent " << success;
-                }
+                qInfo() << "Bytes sent " << success;
             }
         }
-
-        emit scanned(QVariant("192.161.1.12"));
     }
 
 
@@ -134,7 +131,7 @@ namespace Freetils {
         }
     }
 
-    void FbDetector::listenerStateChanged(QAbstractSocket::SocketState state)
+    void FbDetector::listenerStateChanged(  QAbstractSocket::SocketState state)
     {
         for (auto listener : m_SocketListener) {
 
@@ -157,6 +154,13 @@ namespace Freetils {
                 QNetworkDatagram datagram = sender.first->receiveDatagram();
                 qInfo() << "read datagram from "  << datagram.senderAddress() << "::"<<datagram.senderPort();
                 qInfo() << datagram.data();
+                if (datagram.data().contains(m_FbNt)) {
+                    if (!m_Fbx.contains(datagram.senderAddress())) {
+                        m_Fbx.append(datagram.senderAddress());
+
+                        emit scanned(QVariant(datagram.senderAddress().toString()));
+                    }
+                }
             }
         }
     }

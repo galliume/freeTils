@@ -15,13 +15,13 @@ Window {
     }
 
     Component.onCompleted: {
-        fbDetect.Scan();
+        fbDetect.scan();
     }
 
     Connections {
         target: fbDetect
         function onScanned(data) {
-            lstIP.append({"ip":data})
+            lstIP.append({"ip": data })
         }
     }
 
