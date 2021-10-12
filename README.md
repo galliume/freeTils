@@ -2,7 +2,7 @@
 Utils to ease development with freebox.
 
 @todo
-- [x] auto detect freebox on network (done but still instable)
+- [x] auto detect freebox on network
 - [ ] connect to freebox via socket
 - [ ] display logs
 - [ ] deploy app to the freebox

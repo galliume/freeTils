@@ -95,7 +95,8 @@ namespace Freetils {
                     continue;
                 }
 
-                sender.first->setMulticastInterface(*sender.second);
+                //@todo crash randomly, why ?
+                //sender.first->setMulticastInterface(*sender.second);
                 qDebug() << "sending to : " << networkAddress.toString();
 
                 QString message;
