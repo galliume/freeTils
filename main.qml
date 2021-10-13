@@ -44,6 +44,19 @@ Window {
         }
     }
 
+    Connections {
+        target: fbDeploy
+        function onDeployed(isDeployed, status) {
+            if (isDeployed) {
+                deployStatus.color = "green";
+            } else {
+                deployStatus.color = "red";
+            }
+
+            deployStatus.text = status;
+        }
+    }
+
     ListModel {
         id: lstIP
         ListElement { ip: "Select a Freebox" }
@@ -77,6 +90,7 @@ Window {
 
             Text {
                 id: selectedRootProject
+                leftPadding: 150
                 text: settings.rootDirProject
                 font.family: root.fontFamily
                 font.pointSize: root.fontPointSize
@@ -84,7 +98,6 @@ Window {
                 width: parent.width
                 height: parent.height
                 verticalAlignment: Text.AlignVCenter
-                horizontalAlignment: Text.AlignHCenter
             }
 
             MouseArea {
@@ -108,7 +121,7 @@ Window {
             height: root.menuHeight
 
             Text {
-                id:lblStatus
+                id: lblStatus
                 text: "Freebox list"
                 font.family: root.fontFamily
                 font.pointSize: root.fontPointSize
@@ -124,6 +137,7 @@ Window {
 
             ComboBox {
                 id: lstFbx
+                leftPadding: 150
                 anchors.fill: parent
                 model: lstIP
                 currentIndex: 0
@@ -166,8 +180,10 @@ Window {
 
                 onClicked: {
                     if (0 !== lstFbx.currentIndex) {
-                        console.log("Coucou" + lstFbx.currentValue);
                         fbDeploy.serve(selectedRootProject.text, lstFbx.currentValue);
+                    } else {
+                        deployStatus.text = "Please select a Freebox";
+                        deployStatus.color = "red";
                     }
                 }
             }
@@ -175,17 +191,18 @@ Window {
 
         Rectangle {
             color: root.menuColor
-            width: root.width - 100
+            width: root.width - 200
             height: root.menuHeight
 
             Text {
+                id: deployStatus
+                leftPadding: 50
                 text: "Not running"
                 font.family: root.fontFamily
                 font.pointSize: root.fontPointSize
                 color: "red"
                 width: parent.width
                 height: parent.height
-                horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
             }
         }

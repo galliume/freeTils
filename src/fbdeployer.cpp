@@ -28,7 +28,6 @@ namespace Freetils {
 
         workerThread.start();
 
-//        deploy();
         emit operate();
     }
 
@@ -46,9 +45,9 @@ namespace Freetils {
         qDebug() << "devel url " << url;
     }
 
-    void FbDeployer::handleResults(const QString &)
+    void FbDeployer::handleResults(QPair<bool, QString>status)
     {
-        qDebug() << "handle Results";
+        emit deployed(status.first, status.second);
     }
 
 }

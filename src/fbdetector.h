@@ -27,6 +27,7 @@ namespace Freetils {
         QList<QPair<QUdpSocket*, const QNetworkInterface*>> m_SocketSender;
 
         QList<QHostAddress> m_Fbx;
+
     private slots:
         void listenerReceived();
         void senderReceived();

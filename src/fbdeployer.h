@@ -38,10 +38,11 @@ namespace Freetils {
         void deploy();
 
     public slots:
-        void handleResults(const QString &);
+        void handleResults(QPair<bool, QString>status);
 
     signals:
         void operate();
+        void deployed(QVariant isDeployed, QVariant status);
     };
 }
 #endif // FBDEPLOYER_H
