@@ -28,11 +28,14 @@ namespace Freetils {
 
     private:
         const quint16 m_LocalPort = 9000;
+        QString m_FbxIP;
 
         QNetworkInterface m_Interface;
         QHostAddress m_Address;
         QRemoteObjectNode m_RemoteNode;
         QTcpServer* m_TcpServer;
+
+        void deploy();
 
     public slots:
         void handleResults(const QString &);

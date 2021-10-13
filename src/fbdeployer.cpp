@@ -14,6 +14,7 @@ namespace Freetils {
 
     void FbDeployer::serve(QString rootFolder, QString fbxIp)
     {
+        m_FbxIP = fbxIp;
         qDebug() << fbxIp;
 
         //@todo why remove file:// ?
@@ -28,7 +29,22 @@ namespace Freetils {
 
         workerThread.start();
 
+        deploy();
         emit operate();
+    }
+
+    void FbDeployer::deploy()
+    {
+        QJsonObject arg;
+        QString manifestUrl = "http://192.168.1.101:" + QString::number(m_LocalPort);
+        qDebug() << "Manifest url " << manifestUrl;
+
+        arg[QStringLiteral("manifest_url")] = manifestUrl;
+        arg[QStringLiteral("entry_point")] = "main";
+        arg[QStringLiteral("wait")] = false;
+
+        QString url = "http://" + m_FbxIP + "/pub/devel";
+        qDebug() << "devel url " << url;
     }
 
     void FbDeployer::handleResults(const QString &)

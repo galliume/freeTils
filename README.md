@@ -22,8 +22,7 @@
 - [x] auto detect freebox on network
 - [x] create a tcpserver to serve project files
 - [x] add root project dir selection
-- [ ] connect to the freebox via tcpsocket to launch the app via the tcpserver
-- [ ] deploy app to the freebox
+- [ ] deploy app to the freebox via JsonRpc
 - [ ] display logs
 - [ ] cleaning and refactoring
 - [ ] make it work for the mini 4K android via ADB
