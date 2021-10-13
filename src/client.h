@@ -1,7 +1,6 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include <regex>
 #include <iostream>
 #include <QObject>
 #include <QDebug>
@@ -11,6 +10,7 @@
 #include <QBuffer>
 #include <QFile>
 #include <QDir>
+#include <QRegularExpression>
 
 class Client : public QObject, public QRunnable
 {

@@ -4,7 +4,7 @@ Server::Server(QObject *parent, QString rootFolder, quint16 port) : QTcpServer(p
 {
     m_RootFolder = rootFolder;
     m_Port = port;
-    pool.setMaxThreadCount(5);
+    pool.setMaxThreadCount(1);
 }
 
 void Server::start()

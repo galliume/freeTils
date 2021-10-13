@@ -8,6 +8,9 @@ namespace Freetils {
 
     void FbDetector::scan()
     {
+        emit scanned(QVariant("192.168.1.12"));
+        emit scanned(QVariant("192.168.1.13"));
+
         if (QNetworkInterface::IsRunning) {
             const QList<QNetworkInterface>netInf = QNetworkInterface::allInterfaces();
 

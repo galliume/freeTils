@@ -15,10 +15,9 @@ namespace Freetils {
     void FbDeployer::serve(QString rootFolder, QString fbxIp)
     {
         m_FbxIP = fbxIp;
-        qDebug() << fbxIp;
 
-        //@todo why remove file:// ?
-        rootFolder.remove(0, 7);
+        //@todo why remove file:/// ?
+        rootFolder.remove(0, 8);
         Server* server = new Server(nullptr, rootFolder, m_LocalPort);
 
         server->moveToThread(&workerThread);
@@ -29,7 +28,7 @@ namespace Freetils {
 
         workerThread.start();
 
-        deploy();
+//        deploy();
         emit operate();
     }
 

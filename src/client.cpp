@@ -3,7 +3,6 @@
 
 Client::Client(QObject *parent, QString rootFolder, qintptr handle) : QObject(parent), QRunnable(), handle(handle)
 {
-    qDebug() << "ROOT FOLDER " << rootFolder;
     m_RootFolder = rootFolder;
 }
 
@@ -23,15 +22,17 @@ void Client::run()
     socket->waitForReadyRead();
     QByteArray request = socket->readAll();
 
-    QRegExp regex("(?!GET \\/) (.+) HTTP");
+    QRegularExpression regex;
+    regex.setPattern("(?!GET \\/) (.+) HTTP");
     QString file;
 
-    int pos = regex.indexIn(request);
-
-    if (pos > -1) {
-         file = regex.cap(1);
-         file.remove(0, 1);
+    QRegularExpressionMatch match = regex.match(request);
+    if (match.hasMatch()) {
+        file = match.captured(1);
     }
+
+    //@todo detect if there is really a /
+    file.remove(0, 1);
 
     QByteArray data("<html><head><title>freeTils</title></head><body><pre>");
 
@@ -42,7 +43,7 @@ void Client::run()
     qDebug() << "loading " << file;
 
     QFile path(projectDir.absoluteFilePath(file));
-    qDebug() << "abs path " << path;
+    qDebug() << "abs path " << path.fileName();
 
 
     QString httpCode = "200 OK";
