@@ -4,8 +4,8 @@ import QtQuick.Controls 2.12
 import Qt.labs.platform 1.1
 import Qt.labs.settings 1.0
 
-import com.gcconantc.FbDetector 1.0
-import com.gcconantc.FbDeployer 1.0
+import com.galliume.FbDetector 1.0
+import com.galliume.FbDeployer 1.0
 
 Window {
     id: root

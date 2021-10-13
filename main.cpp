@@ -11,14 +11,14 @@ int main(int argc, char *argv[])
 #endif
 
     QGuiApplication app(argc, argv);
-    app.setOrganizationName("gcconantc");
+    app.setOrganizationName("galliume");
     app.setOrganizationDomain("https://github.com/galliume/");
     app.setApplicationName("FreeTils");
 
     QQmlApplicationEngine engine;
 
-    qmlRegisterType<Freetils::FbDetector>("com.gcconantc.FbDetector", 1, 0, "FbDetector");
-    qmlRegisterType<Freetils::FbDeployer>("com.gcconantc.FbDeployer", 1, 0, "FbDeployer");
+    qmlRegisterType<Freetils::FbDetector>("com.galliume.FbDetector", 1, 0, "FbDetector");
+    qmlRegisterType<Freetils::FbDeployer>("com.galliume.FbDeployer", 1, 0, "FbDeployer");
 
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
