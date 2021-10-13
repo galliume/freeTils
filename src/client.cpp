@@ -22,15 +22,49 @@ void Client::run()
     socket->waitForReadyRead();
     QByteArray request = socket->readAll();
 
-    qInfo() << " request " << request.length();
+    QRegExp regex("(?!GET \\/) (.+) HTTP");
+    QString file;
 
-    QByteArray data("<html><head><title>freeTils</title></head><body>hello world!</body></html>");
-    QString lenght = "Content-Length: " + QString::number(data.length()) + "\r\n";
+    int pos = regex.indexIn(request);
+
+    if (pos > -1) {
+         file = regex.cap(1);
+         file.remove(0, 1);
+    }
+
+    QByteArray data("<html><head><title>freeTils</title></head><body><pre>");
+
+    QDir::setCurrent("/home/gpercepied/Documents/workspace/M6/site-iptv-free-qtqml/6Play-freebox");
+    QDir projectDir;
+
+    qDebug() << projectDir.currentPath();
+    qDebug() << "loading " << file;
+
+    QFile path(projectDir.absoluteFilePath(file));
+    qDebug() << "abs path " << path;
+
+
+    QString httpCode = "200 OK";
+
+    if (!path.open(QIODevice::ReadOnly)) {
+        qWarning() << "failed to open file" << qUtf8Printable(path.fileName());
+        httpCode = "404 Not Found";
+    }
+
+    while (!path.atEnd()) {
+        QByteArray buffer = path.read(file.size());
+        data.append(buffer);
+    }
+
+    data.append("</pre></body></html>");
+    QString const lenght = "Content-Length: " + QString::number(data.length()) + "\r\n";
+
+    qDebug() << data;
 
     QByteArray response;
-    response.append("HTTP/1.1 200 OK\r\n");
+    response.append("HTTP/1.1 "+ httpCode.toLocal8Bit() + "\r\n");
     response.append("Content-Type: text/html\r\n");
-    response.append(lenght.toStdString());
+    response.append(lenght.toLocal8Bit());
     response.append("Connection: close\r\n");
     response.append("\r\n");
     response.append(data);
