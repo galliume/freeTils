@@ -8,7 +8,6 @@ namespace Freetils {
 
     void FbDetector::scan()
     {
-
         if (QNetworkInterface::IsRunning) {
             const QList<QNetworkInterface>netInf = QNetworkInterface::allInterfaces();
 

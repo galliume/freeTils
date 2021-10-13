@@ -12,11 +12,13 @@ namespace Freetils {
         workerThread.wait();
     }
 
-    void FbDeployer::serve(QString fbxIp)
+    void FbDeployer::serve(QString rootFolder, QString fbxIp)
     {
         qDebug() << fbxIp;
 
-        Server* server = new Server(this, m_LocalPort);
+        //@todo why remove file:// ?
+        rootFolder.remove(0, 7);
+        Server* server = new Server(nullptr, rootFolder, m_LocalPort);
 
         server->moveToThread(&workerThread);
 

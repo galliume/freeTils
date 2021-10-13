@@ -16,7 +16,7 @@ class Client : public QObject, public QRunnable
 {
     Q_OBJECT
 public:
-    explicit Client(QObject *parent = nullptr, qintptr handle = 0);
+    explicit Client(QObject *parent = nullptr, QString rootFolder = "", qintptr handle = 0);
 
 signals:
 
@@ -25,6 +25,7 @@ signals:
 public:
     void run();
 private:
+    QString m_RootFolder;
     qintptr handle;
 };
 

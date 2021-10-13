@@ -24,7 +24,7 @@ namespace Freetils {
         explicit FbDeployer(QObject *parent = nullptr);
         ~FbDeployer();
 
-        Q_INVOKABLE void serve(QString fbxIp);
+        Q_INVOKABLE void serve(QString rootFolder, QString fbxIp);
 
     private:
         const quint16 m_LocalPort = 9000;

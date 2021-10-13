@@ -11,6 +11,9 @@ int main(int argc, char *argv[])
 #endif
 
     QGuiApplication app(argc, argv);
+    app.setOrganizationName("gcconantc");
+    app.setOrganizationDomain("https://github.com/galliume/");
+    app.setApplicationName("FreeTils");
 
     QQmlApplicationEngine engine;
 

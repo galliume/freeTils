@@ -1,9 +1,10 @@
 
 #include "client.h"
 
-Client::Client(QObject *parent, qintptr handle) : QObject(parent), QRunnable(), handle(handle)
+Client::Client(QObject *parent, QString rootFolder, qintptr handle) : QObject(parent), QRunnable(), handle(handle)
 {
-
+    qDebug() << "ROOT FOLDER " << rootFolder;
+    m_RootFolder = rootFolder;
 }
 
 void Client::run()
@@ -34,7 +35,7 @@ void Client::run()
 
     QByteArray data("<html><head><title>freeTils</title></head><body><pre>");
 
-    QDir::setCurrent("/home/gpercepied/Documents/workspace/M6/site-iptv-free-qtqml/6Play-freebox");
+    QDir::setCurrent(m_RootFolder);
     QDir projectDir;
 
     qDebug() << projectDir.currentPath();

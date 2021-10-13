@@ -1,7 +1,8 @@
 #include "server.h"
 
-Server::Server(QObject *parent, quint16 port) : QTcpServer(parent)
+Server::Server(QObject *parent, QString rootFolder, quint16 port) : QTcpServer(parent)
 {
+    m_RootFolder = rootFolder;
     m_Port = port;
     pool.setMaxThreadCount(5);
 }
@@ -30,7 +31,7 @@ void Server::incomingConnection(qintptr handle)
     //  /!\ depends on qt version... check doc !
     qInfo() << "Incomming connection " << handle << " on " << QThread::currentThread();
 
-    Client* client = new Client(nullptr, handle);
+    Client* client = new Client(nullptr, m_RootFolder, handle);
     client->setAutoDelete(true);
     pool.start(client);
 
