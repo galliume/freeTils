@@ -14,10 +14,15 @@ namespace Freetils {
 
     void FbDeployer::serve(QString rootFolder, QString fbxIp)
     {
-        m_FbxIP = fbxIp;
+        m_FbxIP = fbxIp;        
 
-        //@todo why remove file:/// ?
-        rootFolder.remove(0, 8);
+        //@todo check what FolderDialog returns on mac...
+        //FolderDialog returns a string like file:// on unix or file:/// on windows...
+        //so file://{/} is removed then prepend only one / for absolute root dir project path
+        QRegularExpression regex("(file:\\/{2,3})");
+        rootFolder.replace(regex, "");
+        rootFolder.prepend("/");
+
         Server* server = new Server(nullptr, rootFolder, m_LocalPort);
 
         server->moveToThread(&workerThread);

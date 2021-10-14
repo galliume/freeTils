@@ -23,9 +23,11 @@
 - [x] create a tcpserver to serve project files
 - [x] add root project dir selection
 - [ ] deploy app to the freebox via JsonRpc
-- [ ] display logs
+- [ ] display logs with filtering options
 - [ ] cleaning and refactoring
 - [ ] make it work for the mini 4K android via ADB
 - [ ] control the app via remote keyboard
 - [ ] see if hot reload is possible ?
 
+## Build with
+- Qt 6 / C++2a
