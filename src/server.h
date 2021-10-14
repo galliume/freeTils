@@ -19,6 +19,7 @@ namespace Freetils {
 
     signals:
         void resultReady(QPair<bool, QString>status);
+        void resultEnded(QPair<bool, QString>status);
 
     public slots:
         void start();

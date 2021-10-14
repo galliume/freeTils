@@ -3,14 +3,14 @@
 namespace Freetils {
     FbDetector::FbDetector(QObject *parent) : QObject(parent)
     {
-        qInfo() << "FbDetector";
+
     }
 
     void FbDetector::scan()
     {
         emit scanned(QVariant("192.168.1.12"));
         emit scanned(QVariant("192.168.1.13"));
-
+emit hostIpFounded("192.168.2.65");
         if (QNetworkInterface::IsRunning) {
             const QList<QNetworkInterface>netInf = QNetworkInterface::allInterfaces();
 
@@ -33,8 +33,6 @@ namespace Freetils {
                  if ("enp3s0f1" == interface.name()) {
                      continue;
                  }
-
-                qInfo() << "interface " << interface.name();
 
                  QUdpSocket* socketListener = new QUdpSocket(this);
 
@@ -66,8 +64,6 @@ namespace Freetils {
 
                     if (address.protocol() == QAbstractSocket::IPv4Protocol) {
 
-                        qDebug() << "\t " << address.toString();
-
                         QUdpSocket* socketSender = new QUdpSocket(this);
                         socketSender->setProxy(QNetworkProxy::NoProxy);
 
@@ -93,13 +89,8 @@ namespace Freetils {
             for (auto networkAddress : sender.second->allAddresses()) {
 
                 if ("127.0.0.1" == networkAddress.toString() || networkAddress.protocol() != QAbstractSocket::IPv4Protocol) {
-                    qDebug() << "local or not ipv4 " << networkAddress.toString();
                     continue;
                 }
-
-                //@todo crash randomly, why ?
-                //sender.first->setMulticastInterface(*sender.second);
-                qDebug() << "sending to : " << networkAddress.toString();
 
                 QString message;
 
@@ -112,54 +103,59 @@ namespace Freetils {
                 message += QString::fromLocal8Bit("ST: %1\r\n").arg(m_FbNt);
                 message += QStringLiteral("\r\n");
 
-                qint64 success = sender.first->writeDatagram(message.toLatin1().constData(), message.size(),
+                sender.first->writeDatagram(message.toLatin1().constData(), message.size(),
                 QHostAddress(QLatin1String(m_ADDR4)), m_Port);
-
-                qInfo() << "Bytes sent " << success;
             }
         }
     }
 
     void FbDetector::listenerReceived()
     {
-        qInfo() << "Reading pending datagrams from listener";
-
         for (auto listener : m_SocketListener) {
             while (listener.first->hasPendingDatagrams()) {
                 QNetworkDatagram datagram = listener.first->receiveDatagram();
-                qInfo() << "read datagram from "  << datagram.senderAddress() << "::"<<datagram.senderPort();
+
+                if (m_HostIP.isEmpty()) {
+                    qDebug() << "HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa";
+                    m_HostIP = datagram.senderAddress().toString();
+                    emit hostIpFounded(m_HostIP);
+                }
+
+                qInfo() << "listenerReceived read datagram from "  << datagram.senderAddress() << "::"<<datagram.senderPort();
                 qInfo() << datagram.data();
             }
         }
     }
 
-    void FbDetector::listenerStateChanged(  QAbstractSocket::SocketState state)
+    void FbDetector::listenerStateChanged(QAbstractSocket::SocketState state)
     {
+        Q_UNUSED(state);
+
         for (auto listener : m_SocketListener) {
 
             listener.first->setMulticastInterface(*listener.second);
 
             if (!listener.first->joinMulticastGroup(QHostAddress(QLatin1String(m_ADDR4)), *listener.second)) {
                 qWarning() << "listener failed to join :" << listener.first->errorString();
-            } else {
-                qInfo() << " join from listener " << state;
             }
         }
     }
 
     void FbDetector::senderReceived()
     {
-        qInfo() << "Reading pending datagrams from sender";
-
         for (auto sender : m_SocketSender) {
             while (sender.first->hasPendingDatagrams()) {
                 QNetworkDatagram datagram = sender.first->receiveDatagram();
-                qInfo() << "read datagram from "  << datagram.senderAddress() << "::"<<datagram.senderPort();
-                qInfo() << datagram.data();
                 if (datagram.data().contains(m_FbNt)) {
                     if (!m_Fbx.contains(datagram.senderAddress())) {
-                        m_Fbx.append(datagram.senderAddress());
 
+                        if (m_HostIP.isEmpty()) {
+                            m_HostIP = datagram.senderAddress().toString();
+                            emit hostIpFounded(m_HostIP);
+                        }
+
+                        m_Fbx.append(datagram.senderAddress());
+                        sender.first->close();
                         emit scanned(QVariant(datagram.senderAddress().toString()));
                     }
                 }
@@ -169,14 +165,14 @@ namespace Freetils {
 
     void FbDetector::senderStateChanged(QAbstractSocket::SocketState state)
     {
+        Q_UNUSED(state);
+
         for (auto sender : m_SocketSender) {
 
             sender.first->setMulticastInterface(*sender.second);
 
             if (!sender.first->joinMulticastGroup(QHostAddress(QLatin1String(m_ADDR4)), *sender.second)) {
                 qWarning() << "sender failed to join :" << sender.first->errorString();
-            } else {
-                qInfo() << " join from sender " << state;
             }
         }
     }

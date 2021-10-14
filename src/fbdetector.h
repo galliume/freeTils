@@ -22,6 +22,7 @@ namespace Freetils {
         const char m_ADDR4[16] = "239.255.255.250";
         const quint16 m_Port = 1900;
         const char m_FbNt[10] = "fbx:devel";
+        QString m_HostIP;
 
         QList<QPair<QUdpSocket*, const QNetworkInterface*>> m_SocketListener;
         QList<QPair<QUdpSocket*, const QNetworkInterface*>> m_SocketSender;
@@ -36,7 +37,7 @@ namespace Freetils {
 
     signals:
         void scanned(QVariant data);
-
+        void hostIpFounded(QString ip);
     };
 }
 #endif // FBDETECTOR_H

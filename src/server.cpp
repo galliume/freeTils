@@ -29,7 +29,18 @@ namespace Freetils {
     void Server::quit()
     {
         this->close();
-        qInfo() << "quit";
+
+        QPair<bool, QString>status;
+
+        if (this->isListening()) {
+            status.first = false;
+            status.second = "Error still listening";
+        } else {
+            status.first = true;
+            status.second = "Server stoped";
+        }
+
+        emit(resultEnded(status));
     }
 
     void Server::incomingConnection(qintptr handle)

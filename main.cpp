@@ -1,5 +1,6 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QIcon>
 
 #include "src/fbdetector.h"
 #include "src/fbdeployer.h"
@@ -14,6 +15,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName("galliume");
     app.setOrganizationDomain("https://github.com/galliume/");
     app.setApplicationName("FreeTils");
+    app.setWindowIcon(QIcon(":/images/icon.png"));
 
     QQmlApplicationEngine engine;
 

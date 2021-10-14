@@ -3,13 +3,12 @@
 namespace Freetils {
     FbDeployer::FbDeployer(QObject *parent) : QObject(parent)
     {
-        qInfo() << "FbDeployer";
+
     }
 
     FbDeployer::~FbDeployer()
     {
         workerThread.quit();
-        workerThread.wait();
     }
 
     void FbDeployer::serve(QString rootFolder, QString fbxIp)
@@ -29,11 +28,20 @@ namespace Freetils {
 
         connect(&workerThread, &QThread::finished, server, &QObject::deleteLater);
         connect(this, &FbDeployer::operate, server, &Server::start);
-        connect(server, &Server::resultReady, this, &FbDeployer::handleResults);
+        connect(this, &FbDeployer::terminate, server, &Server::quit);
+        connect(server, &Server::resultReady, this, &FbDeployer::resultReady);
+        connect(server, &Server::resultEnded, this, &FbDeployer::resultEnded);
+        connect(m_FbDetector, &FbDetector::hostIpFounded, this, &FbDeployer::setHostIP);
 
         workerThread.start();
 
         emit operate();
+    }
+
+    void FbDeployer::setHostIP(QString ip)
+    {
+        qDebug() << "setHostIP " << ip;
+        m_HostIP = ip;
     }
 
     void FbDeployer::deploy()
@@ -50,9 +58,26 @@ namespace Freetils {
         qDebug() << "devel url " << url;
     }
 
-    void FbDeployer::handleResults(QPair<bool, QString>status)
+    void FbDeployer::stop()
     {
+        emit terminate();
+    }
+
+    void FbDeployer::resultReady(QPair<bool, QString>status)
+    {
+        if (status.first) {
+            deploy();
+        }
+
         emit deployed(status.first, status.second);
     }
 
+    void FbDeployer::resultEnded(QPair<bool, QString>status)
+    {
+        if (status.first) {
+            workerThread.quit();
+        }
+
+        emit stoped(status.first, status.second);
+    }
 }

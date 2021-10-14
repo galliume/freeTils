@@ -14,15 +14,17 @@ Window {
     visible: true
     title: qsTr("FreeTils")
 
-    readonly property string labelColor: "#3C3C3B"
-    readonly property string menuColor: "#EBEBD3"
+    readonly property string labelColor: "#264653"
+    readonly property string menuColor: "#e9c46a"
+    readonly property string contentColor: "#264653"
     readonly property string fontFamily: "Helvetica"
     readonly property int fontPointSize: 8
     readonly property int menuHeight: 30
 
     Settings {
         id: settings
-        property string rootDirProject : "click to select the root folder of your project"
+        property string rootDirProject: "click to select the root folder of your project"
+        property int selectedBox: 0
     }
 
     FbDetector {
@@ -49,11 +51,30 @@ Window {
         function onDeployed(isDeployed, status) {
             if (isDeployed) {
                 deployStatus.color = "green";
+                deployBtn.visible = false;
+                stopBtn.visible = true;
             } else {
                 deployStatus.color = "red";
+                deployBtn.visible = true;
+                stopBtn.visible = false;
             }
 
             deployStatus.text = status;
+        }
+    }
+
+    Connections {
+        target: fbDeploy
+        function onStoped(isStoped, status) {
+            if (isStoped) {
+                deployBtn.visible = true;
+                stopBtn.visible = false;
+                deployStatus.color = "green";
+                deployStatus.text = status;
+            } else {
+                deployStatus.color = "red";
+                deployStatus.text = status;
+            }
         }
     }
 
@@ -140,7 +161,7 @@ Window {
                 leftPadding: 150
                 anchors.fill: parent
                 model: lstIP
-                currentIndex: 0
+                currentIndex: settings.selectedBox
             }
         }
     }
@@ -177,14 +198,24 @@ Window {
                 text: "Deploy"
                 width: parent.width
                 height: parent.height
-
                 onClicked: {
                     if (0 !== lstFbx.currentIndex) {
+                        settings.selectedBox = lstFbx.currentIndex;
                         fbDeploy.serve(selectedRootProject.text, lstFbx.currentValue);
                     } else {
                         deployStatus.text = "Please select a Freebox";
                         deployStatus.color = "red";
                     }
+                }
+            }
+            Button {
+                id: stopBtn
+                text: "Stop"
+                visible: false
+                width: parent.width
+                height: parent.height
+                onClicked: {
+                    fbDeploy.stop();
                 }
             }
         }
@@ -206,6 +237,15 @@ Window {
                 verticalAlignment: Text.AlignVCenter
             }
         }
+    }
+
+    Rectangle {
+        id: content
+        anchors.top: deployRow.bottom
+        width: root.width
+        height: root.height - folderRow.height - deployRow.height - selectFbx.height
+        border.width: 5
+        border.color: contentColor
     }
 
     FolderDialog  {
