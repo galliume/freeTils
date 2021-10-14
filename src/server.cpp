@@ -1,10 +1,11 @@
 #include "server.h"
 
 namespace Freetils {
-    Server::Server(QObject *parent, QString rootFolder, quint16 port) : QTcpServer(parent)
+    Server::Server(QObject *parent, QString rootFolder, QString hostIp, quint16 port) : QTcpServer(parent)
     {
         m_RootFolder = rootFolder;
         m_Port = port;
+        m_HostIp = hostIp;
         pool.setMaxThreadCount(5);
     }
 
@@ -12,11 +13,12 @@ namespace Freetils {
     {
         QPair<bool, QString>status;
 
-        //@todo put IP from freebox network => 192.168.101
-        if (this->listen(QHostAddress::Any, m_Port)) {
+        QHostAddress address;
+        address.setAddress(m_HostIp);
+
+        if (this->listen(address, m_Port)) {
             status.first = true;
-            status.second = "Server started on http://192.168.101:" + QString::number(m_Port);
-            qInfo() << status;
+            status.second = "Server started on " + address.toString() + ":" + QString::number(m_Port);
         } else {
             status.first = false;
             status.second = "Error : " + this->errorString();
@@ -45,12 +47,8 @@ namespace Freetils {
 
     void Server::incomingConnection(qintptr handle)
     {
-        //  /!\ depends on qt version... check doc !
-        qInfo() << "Incomming connection " << handle << " on " << QThread::currentThread();
-
         Client* client = new Client(nullptr, m_RootFolder, handle);
         client->setAutoDelete(true);
         pool.start(client);
-
     }
 }

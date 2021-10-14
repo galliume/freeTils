@@ -9,8 +9,6 @@ namespace Freetils {
 
     void Client::run()
     {
-        qInfo() << this << " run " << QThread::currentThread();
-
         QTcpSocket* socket = new QTcpSocket(nullptr);//multithread => no parent
 
         if (!socket->setSocketDescriptor(handle)) {
@@ -21,36 +19,28 @@ namespace Freetils {
         }
 
         socket->waitForReadyRead();
+
         QByteArray request = socket->readAll();
-
-        QRegularExpression regex;
-        regex.setPattern("(?!GET \\/) (.+) HTTP");
         QString file;
-
+        QRegularExpression regex("(?!GET \\/) (.+) HTTP");
         QRegularExpressionMatch match = regex.match(request);
+
         if (match.hasMatch()) {
             file = match.captured(1);
         }
 
-        //@todo detect if there is really a /
-        file.remove(0, 1);
+        if (0 == file.indexOf("/")) {
+            file.remove(0, 1);
+        }
 
-        QByteArray data("<html><head><title>freeTils</title></head><body><pre>");
-
+        QByteArray data("<!doctype html><html><head><title>freeTils</title></head><body><pre>");
         QDir::setCurrent(m_RootFolder);
         QDir projectDir;
-
-        qDebug() << projectDir.currentPath();
-        qDebug() << "loading " << file;
-
         QFile path(projectDir.absoluteFilePath(file));
-        qDebug() << "abs path " << path.fileName();
-
-
         QString httpCode = "200 OK";
 
         if (!path.open(QIODevice::ReadOnly)) {
-            qWarning() << "failed to open file" << qUtf8Printable(path.fileName());
+            qWarning() << "failed to open file " << qUtf8Printable(path.fileName());
             httpCode = "404 Not Found";
         }
 
@@ -60,11 +50,10 @@ namespace Freetils {
         }
 
         data.append("</pre></body></html>");
+
         QString const lenght = "Content-Length: " + QString::number(data.length()) + "\r\n";
-
-        qDebug() << data;
-
         QByteArray response;
+
         response.append("HTTP/1.1 "+ httpCode.toLocal8Bit() + "\r\n");
         response.append("Content-Type: text/html\r\n");
         response.append(lenght.toLocal8Bit());
@@ -76,7 +65,5 @@ namespace Freetils {
         socket->waitForBytesWritten();
         socket->close();
         socket->deleteLater();
-
-        qInfo() << this << " done " << QThread::currentThread();
     }
 }

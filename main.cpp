@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName("galliume");
     app.setOrganizationDomain("https://github.com/galliume/");
     app.setApplicationName("FreeTils");
-    app.setWindowIcon(QIcon(":/images/icon.png"));
+    app.setWindowIcon(QIcon(":/images/icon.ico"));
 
     QQmlApplicationEngine engine;
 

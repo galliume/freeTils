@@ -10,7 +10,7 @@ namespace Freetils {
     {
         emit scanned(QVariant("192.168.1.12"));
         emit scanned(QVariant("192.168.1.13"));
-emit hostIpFounded("192.168.2.65");
+
         if (QNetworkInterface::IsRunning) {
             const QList<QNetworkInterface>netInf = QNetworkInterface::allInterfaces();
 
@@ -56,7 +56,6 @@ emit hostIpFounded("192.168.2.65");
                  listenerPair.second = &interface;
 
                  m_SocketListener.append(listenerPair);
-
 
                 for (const QNetworkAddressEntry& entry : interface.addressEntries())
                 {
@@ -116,13 +115,9 @@ emit hostIpFounded("192.168.2.65");
                 QNetworkDatagram datagram = listener.first->receiveDatagram();
 
                 if (m_HostIP.isEmpty()) {
-                    qDebug() << "HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa";
                     m_HostIP = datagram.senderAddress().toString();
                     emit hostIpFounded(m_HostIP);
                 }
-
-                qInfo() << "listenerReceived read datagram from "  << datagram.senderAddress() << "::"<<datagram.senderPort();
-                qInfo() << datagram.data();
             }
         }
     }
@@ -155,7 +150,6 @@ emit hostIpFounded("192.168.2.65");
                         }
 
                         m_Fbx.append(datagram.senderAddress());
-                        sender.first->close();
                         emit scanned(QVariant(datagram.senderAddress().toString()));
                     }
                 }

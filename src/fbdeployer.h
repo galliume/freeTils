@@ -7,13 +7,13 @@
 #include <QObject>
 #include <QDebug>
 #include <QNetworkInterface>
-#include <QUdpSocket>
-#include <QNetworkProxy>
-#include <QNetworkDatagram>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QUrl>
 #include <QtRemoteObjects>
 #include <QTcpServer>
-#include <QTextStream>
 #include <QThread>
+#include <QOperatingSystemVersion>
 
 namespace Freetils {
     class FbDeployer : public QObject
@@ -25,13 +25,15 @@ namespace Freetils {
         explicit FbDeployer(QObject *parent = nullptr);
         ~FbDeployer();
 
-        Q_INVOKABLE void serve(QString rootFolder, QString fbxIp);
+        Q_INVOKABLE void serve(QString rootFolder, QString fbxIp, QString hostIp);
         Q_INVOKABLE void stop();
 
     private:
         const quint16 m_LocalPort = 9000;
         QString m_FbxIP;
         QString m_HostIP;
+        QNetworkAccessManager m_Qnam;
+        QNetworkReply* m_Reply;
 
         QNetworkInterface m_Interface;
         QHostAddress m_Address;
@@ -40,12 +42,11 @@ namespace Freetils {
 
         void deploy();
 
-        FbDetector* m_FbDetector = nullptr;
-
     public slots:
         void resultReady(QPair<bool, QString>status);
         void resultEnded(QPair<bool, QString>status);
-        void setHostIP(QString ip);
+        void response(QNetworkReply *reply);
+        void errorOccurred(QNetworkReply::NetworkError code);
 
     signals:
         void operate();
