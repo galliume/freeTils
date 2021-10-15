@@ -3,7 +3,9 @@
 namespace Freetils {
     FbDeployer::FbDeployer(QObject *parent) : QObject(parent)
     {
-
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        qRegisterMetaType<QPair<bool, QString>>("QPair<bool, QString>");
+#endif
     }
 
     FbDeployer::~FbDeployer()

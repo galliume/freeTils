@@ -36,5 +36,6 @@ HEADERS += \
     src/fbdetector.h \
     src/server.h
 
+unix:RC_ICONS = += icons/icon.png
 win32:RC_ICONS += icons/icon.ico
 macx: ICON += icons/icon.icns
