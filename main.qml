@@ -119,7 +119,7 @@ Window {
 
             Text {
                 id: selectedRootProject
-                leftPadding: 150
+                leftPadding: 270
                 text: settings.rootDirProject
                 font.family: root.fontFamily
                 font.pointSize: root.fontPointSize
@@ -166,7 +166,7 @@ Window {
 
             ComboBox {
                 id: lstFbx
-                leftPadding: 150
+                leftPadding: 270
                 anchors.fill: parent
                 model: lstIP
                 currentIndex: settings.selectedBox
@@ -197,15 +197,26 @@ Window {
         }
 
         Rectangle {
-            width: 100
+            width: 220
             height: root.menuHeight
             color: root.labelColor
 
             Button {
-                id: deployBtn
-                text: "Deploy"
-                width: parent.width
+                id: launchBtn
+                text: "Launch"
+                width: parent.width - 120
                 height: parent.height
+                onClicked: {
+                    fbDeploy.launch(selectedRootProject.text);
+                }
+            }
+
+            Button {
+                id: deployBtn
+                text: "Deploy on fbx"
+                width: parent.width - 100
+                height: parent.height
+                anchors.left: launchBtn.right
                 onClicked: {
                     if (0 !== lstFbx.currentIndex) {
                         settings.selectedBox = lstFbx.currentIndex;
@@ -220,8 +231,9 @@ Window {
                 id: stopBtn
                 text: "Stop"
                 visible: false
-                width: parent.width
+                width: parent.width - 100
                 height: parent.height
+                anchors.left: launchBtn.right
                 onClicked: {
                     fbDeploy.stop();
                 }

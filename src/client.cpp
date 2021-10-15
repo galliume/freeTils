@@ -33,7 +33,7 @@ namespace Freetils {
             file.remove(0, 1);
         }
 
-        QByteArray data("<!doctype html><html><head><title>freeTils</title></head><body><pre>");
+        QByteArray data;
         QDir::setCurrent(m_RootFolder);
         QDir projectDir;
         QFile path(projectDir.absoluteFilePath(file));
@@ -48,8 +48,6 @@ namespace Freetils {
             QByteArray buffer = path.read(file.size());
             data.append(buffer);
         }
-
-        data.append("</pre></body></html>");
 
         QString const lenght = "Content-Length: " + QString::number(data.length()) + "\r\n";
         QByteArray response;

@@ -27,6 +27,7 @@ namespace Freetils {
 
         Q_INVOKABLE void serve(QString rootFolder, QString fbxIp, QString hostIp);
         Q_INVOKABLE void stop();
+        Q_INVOKABLE void launch(QString rootFolder);
 
     private:
         const quint16 m_LocalPort = 9000;

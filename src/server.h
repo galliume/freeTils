@@ -4,9 +4,7 @@
 #include <QObject>
 #include <QDebug>
 #include <QTcpServer>
-#include <QTcpSocket>
 #include <QThreadPool>
-#include <QThread>
 
 #include "client.h"
 

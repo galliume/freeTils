@@ -4,6 +4,7 @@
 ## This tool will be able to :
 - auto detect stb on network
 - deploy qml app on stb
+- launch app with qmlscene
 - show and filter logs
 - control app with virtual remote on keyboard
 - maybe hot reload
@@ -23,6 +24,7 @@
 - [x] create a tcpserver to serve project files
 - [x] add root project dir selection
 - [ ] deploy app to the freebox via JsonRpc
+- [ ] launch app with qmlscene
 - [ ] display logs with filtering options
 - [ ] cleaning and refactoring
 - [ ] make it work for the mini 4K android via ADB

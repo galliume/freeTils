@@ -18,13 +18,11 @@ namespace Freetils {
         m_FbxIP = fbxIp;        
         m_HostIP = hostIp;
 
-        //@todo check what FolderDialog returns on mac...
         //FolderDialog returns a string like file:// on unix or file:/// on windows...
         //so file://{/} is removed then if linux OS prepend only one / for absolute root dir project path
         QRegularExpression regex("(file:\\/{2,3})");
         rootFolder.replace(regex, "");
 
-        //@todo check for MacOS
         if(QOperatingSystemVersion::Windows != QOperatingSystemVersion::currentType()) {
             rootFolder.prepend("/");
         }
@@ -69,6 +67,11 @@ namespace Freetils {
 
         connect(&m_Qnam, &QNetworkAccessManager::finished, this, &FbDeployer::response);
         connect(m_Reply, &QNetworkReply::errorOccurred, this, &FbDeployer::errorOccurred);
+    }
+
+    void FbDeployer::launch(QString rootFolder)
+    {
+        qDebug() << "launch";
     }
 
     void FbDeployer::errorOccurred(QNetworkReply::NetworkError code)
