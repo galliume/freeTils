@@ -45,25 +45,25 @@ namespace Freetils {
     void FbDeployer::deploy()
     {
         QJsonObject arg;
-        QString manifestUrl = m_HostIP + ":" + QString::number(m_LocalPort);
-        qDebug() << "Manifest url " << manifestUrl;
+        QJsonObject params;
+        QString manifestUrl = "http://" + m_HostIP + ":" + QString::number(m_LocalPort) + "/manifest.json";
 
-        arg[QStringLiteral("manifest_url")] = manifestUrl;
-        arg[QStringLiteral("entry_point")] = "main";
-        arg[QStringLiteral("wait")] = false;
+        params[QStringLiteral("entry_point")] = "main";
+        params[QStringLiteral("wait")] = false;
+        params[QStringLiteral("manifest_url")] = manifestUrl;
+
+        arg[QStringLiteral("jsonrpc")] = QStringLiteral("2.0");
+        arg[QStringLiteral("method")] = "debug_qml_app";
+        arg[QStringLiteral("params")] = params;
 
         QJsonDocument jsonDoc(arg);
-        QByteArray data = jsonDoc.toJson();
-
         QString url = "http://" + m_FbxIP + "/pub/devel";
-        qDebug() << "devel url " << url;
-        qDebug() << "params " << data;
 
         QNetworkRequest request(url);
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-        m_Qnam.setTransferTimeout(3000);
-        m_Reply = m_Qnam.post(request, data);
+        m_Qnam.setTransferTimeout(0);
+        m_Reply = m_Qnam.post(request, jsonDoc.toJson());
 
         connect(&m_Qnam, &QNetworkAccessManager::finished, this, &FbDeployer::response);
         connect(m_Reply, &QNetworkReply::errorOccurred, this, &FbDeployer::errorOccurred);
@@ -83,8 +83,33 @@ namespace Freetils {
     {
         if(reply->error() == QNetworkReply::NoError)
         {
-            QString contents = QString::fromUtf8(reply->readAll());
-            qDebug() << contents;
+            QString contents = QString::fromUtf8(reply->readAll()); 
+
+            QJsonDocument jsonDoc = QJsonDocument::fromJson(contents.toUtf8());
+
+            m_Out = new QTcpSocket(this);
+            m_Out->connectToHost(QHostAddress(m_FbxIP), jsonDoc["result"]["stdout_port"].toDouble());
+
+            if (m_Out->isValid()) {
+                connect(m_Out, &QTcpSocket::readyRead, this, &FbDeployer::out);
+                //connect(socket, &QWebSocket::disconnected, this, &FbDeployer::onSocketDisconnected);
+            }
+
+            m_Err = new QTcpSocket(this);
+            m_Err->connectToHost(QHostAddress(m_FbxIP), jsonDoc["result"]["stderr_port"].toDouble());
+
+            if (m_Err->isValid()) {
+                connect(m_Err, &QTcpSocket::readyRead, this, &FbDeployer::err);
+                //connect(socket, &QWebSocket::disconnected, this, &FbDeployer::onSocketDisconnected);
+            }
+
+            m_Qml = new QTcpSocket(this);
+            m_Qml->connectToHost(QHostAddress(m_FbxIP), jsonDoc["result"]["qml_port"].toDouble());
+
+            if (m_Qml->isValid()) {
+                connect(m_Qml, &QTcpSocket::readyRead, this, &FbDeployer::qml);
+                //connect(socket, &QWebSocket::disconnected, this, &FbDeployer::onSocketDisconnected);
+            }
         }
         else
         {
@@ -93,6 +118,27 @@ namespace Freetils {
         }
 
         reply->deleteLater();
+    }
+
+    void FbDeployer::out()
+    {
+        QByteArray out = m_Out->readAll();
+        qDebug() << "Output : " << out;
+        emit logged(QVariant(out));
+    }
+
+    void FbDeployer::err()
+    {
+        QByteArray err = m_Err->readAll();
+        qDebug() << "Error : " << err;
+        emit logged(QVariant(err));
+    }
+
+    void FbDeployer::qml()
+    {
+        QByteArray qml = m_Qml->readAll();
+        emit logged(QVariant(qml));
+        qDebug() << "QML : " << qml;
     }
 
     void FbDeployer::stop()

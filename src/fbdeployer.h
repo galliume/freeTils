@@ -14,6 +14,7 @@
 #include <QTcpServer>
 #include <QThread>
 #include <QOperatingSystemVersion>
+#include <QWebSocket>
 
 namespace Freetils {
     class FbDeployer : public QObject
@@ -24,6 +25,10 @@ namespace Freetils {
     public:
         explicit FbDeployer(QObject *parent = nullptr);
         ~FbDeployer();
+
+        void out();
+        void err();
+        void qml();
 
         Q_INVOKABLE void serve(QString rootFolder, QString fbxIp, QString hostIp);
         Q_INVOKABLE void stop();
@@ -40,6 +45,9 @@ namespace Freetils {
         QHostAddress m_Address;
         QRemoteObjectNode m_RemoteNode;
         QTcpServer* m_TcpServer;
+        QTcpSocket* m_Out;
+        QTcpSocket* m_Err;
+        QTcpSocket* m_Qml;
 
         void deploy();
 
@@ -54,6 +62,7 @@ namespace Freetils {
         void terminate();
         void deployed(QVariant isDeployed, QVariant status);
         void stoped(QVariant isStoped, QVariant status);
+        void logged(QVariant log);
     };
 }
 #endif // FBDEPLOYER_H

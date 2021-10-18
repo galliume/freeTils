@@ -6,7 +6,7 @@ namespace Freetils {
         m_RootFolder = rootFolder;
         m_Port = port;
         m_HostIp = hostIp;
-        pool.setMaxThreadCount(5);
+        pool.setMaxThreadCount(50);
     }
 
     void Server::start()

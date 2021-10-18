@@ -53,7 +53,7 @@ namespace Freetils {
         QByteArray response;
 
         response.append("HTTP/1.1 "+ httpCode.toLocal8Bit() + "\r\n");
-        response.append("Content-Type: text/html\r\n");
+        response.append("Content-Type: plain/text\r\n");
         response.append(lenght.toLocal8Bit());
         response.append("Connection: close\r\n");
         response.append("\r\n");

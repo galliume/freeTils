@@ -86,6 +86,13 @@ Window {
         }
     }
 
+    Connections {
+        target: fbDeploy
+        function onLogged(out) {
+            logs.append(out);
+        }
+    }
+
     ListModel {
         id: lstIP
         ListElement { ip: "Select a Freebox" }
@@ -266,6 +273,15 @@ Window {
         height: root.height - folderRow.height - deployRow.height - selectFbx.height
         border.width: 5
         border.color: contentColor
+
+        ScrollView {
+            anchors.fill: parent
+
+            TextArea {
+                id: logs
+                readOnly: true
+            }
+        }
     }
 
     FolderDialog  {

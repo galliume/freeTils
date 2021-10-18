@@ -8,9 +8,6 @@ namespace Freetils {
 
     void FbDetector::scan()
     {
-        emit scanned(QVariant("192.168.1.12"));
-        emit scanned(QVariant("192.168.1.13"));
-
         if (QNetworkInterface::IsRunning) {
             const QList<QNetworkInterface>netInf = QNetworkInterface::allInterfaces();
 
@@ -114,10 +111,10 @@ namespace Freetils {
             while (listener.first->hasPendingDatagrams()) {
                 QNetworkDatagram datagram = listener.first->receiveDatagram();
 
-                if (m_HostIP.isEmpty()) {
-                    m_HostIP = datagram.senderAddress().toString();
-                    emit hostIpFounded(m_HostIP);
-                }
+//                if (m_HostIP.isEmpty()) {
+//                    m_HostIP = datagram.senderAddress().toString();
+//                    emit hostIpFounded(m_HostIP);
+//                }
             }
         }
     }
@@ -145,7 +142,7 @@ namespace Freetils {
                     if (!m_Fbx.contains(datagram.senderAddress())) {
 
                         if (m_HostIP.isEmpty()) {
-                            m_HostIP = datagram.senderAddress().toString();
+                            m_HostIP = sender.first->localAddress().toString();
                             emit hostIpFounded(m_HostIP);
                         }
 

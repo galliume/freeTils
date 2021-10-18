@@ -2,6 +2,7 @@ QT += quick
 QT += network
 QT += core
 QT += remoteobjects
+QT += websockets
 
 CONFIG += c++2a
 
