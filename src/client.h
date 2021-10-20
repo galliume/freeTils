@@ -11,6 +11,7 @@
 #include <QFile>
 #include <QDir>
 #include <QRegularExpression>
+#include <QProcess>
 
 namespace Freetils {
     class Client : public QObject, public QRunnable
@@ -18,9 +19,9 @@ namespace Freetils {
         Q_OBJECT
     public:
         explicit Client(QObject *parent = nullptr, QString rootFolder = "", qintptr handle = 0);
+        QTcpSocket* getSocket() { return m_Socket; };
 
     signals:
-
 
         // QRunnable interface
     public:
@@ -28,6 +29,7 @@ namespace Freetils {
     private:
         QString m_RootFolder;
         qintptr handle;
+        QTcpSocket* m_Socket;
     };
 }
 

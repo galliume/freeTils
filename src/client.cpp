@@ -9,18 +9,17 @@ namespace Freetils {
 
     void Client::run()
     {
-        QTcpSocket* socket = new QTcpSocket(nullptr);//multithread => no parent
+        m_Socket = new QTcpSocket(nullptr);//multithread => no parent
 
-        if (!socket->setSocketDescriptor(handle)) {
-            qCritical() << socket->errorString();
-            delete socket;
-
+        if (!m_Socket->setSocketDescriptor(handle)) {
+            qCritical() << m_Socket->errorString();
+            delete m_Socket;
             return;
         }
 
-        socket->waitForReadyRead();
+        m_Socket->waitForReadyRead();
 
-        QByteArray request = socket->readAll();
+        QByteArray request = m_Socket->readAll();
         QString file;
         QRegularExpression regex("(?!GET \\/) (.+) HTTP");
         QRegularExpressionMatch match = regex.match(request);
@@ -33,35 +32,66 @@ namespace Freetils {
             file.remove(0, 1);
         }
 
-        QByteArray data;
         QDir::setCurrent(m_RootFolder);
         QDir projectDir;
         QFile path(projectDir.absoluteFilePath(file));
         QString httpCode = "200 OK";
+        QByteArray data, response;
 
         if (!path.open(QIODevice::ReadOnly)) {
             qWarning() << "failed to open file " << qUtf8Printable(path.fileName());
             httpCode = "404 Not Found";
+            data = "";
+        } else {
+            data = path.readAll();
         }
 
-        while (!path.atEnd()) {
-            QByteArray buffer = path.read(file.size());
-            data.append(buffer);
+        if (path.fileName().contains(".js")) {
+            QProcess gzip;
+            QStringList args("-c");
+
+            gzip.start("gzip", args);
+
+            if (!gzip.waitForStarted()) {
+                qWarning() << "can't use gzip";
+            }
+
+            gzip.write(data);
+            gzip.closeWriteChannel();
+
+            if (!gzip.waitForFinished()) {
+                qWarning() << "can't gzip";
+            }
+
+            //data = gzip.readAll();
         }
 
-        QString const lenght = "Content-Length: " + QString::number(data.length()) + "\r\n";
-        QByteArray response;
+        QString length = "Content-Length: " + QString::number(data.size()) + "\r\n";
 
         response.append("HTTP/1.1 "+ httpCode.toLocal8Bit() + "\r\n");
-        response.append("Content-Type: plain/text\r\n");
-        response.append(lenght.toLocal8Bit());
-        response.append("Connection: close\r\n");
+
+        if (path.fileName().contains(".js")) {
+            response.append("Content-Type: application/javascript\r\n");
+            //response.append("Accept-Ranges: bytes\r\n");
+            //response.append("Accept-Encoding: gzip\r\n");
+            //response.append("Content-Encoding: gzip\r\n");
+        } else {
+            response.append("Accept-Ranges: none\r\n");
+        }
+
+        //response.append("Content-Type: text/plain\r\n");
+        response.append("Connection: keep-alive\r\n");
+        response.append("Keep-Alive: timeout=5\r\n");
+        response.append(length.toLocal8Bit());
+        //response.append("Cache-Control: no-cache\r\n");
+        //response.append("Pragma: no-cache\r\n");
         response.append("\r\n");
         response.append(data);
 
-        socket->write(response);
-        socket->waitForBytesWritten();
-        socket->close();
-        socket->deleteLater();
+        m_Socket->write(response);
+
+        m_Socket->waitForBytesWritten();
+        m_Socket->close();
+        m_Socket->deleteLater();
     }
 }

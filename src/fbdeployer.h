@@ -29,6 +29,9 @@ namespace Freetils {
         void out();
         void err();
         void qml();
+        void socketOutDisconnected();
+        void socketErrDisconnected();
+        void socketQmlDisconnected();
 
         Q_INVOKABLE void serve(QString rootFolder, QString fbxIp, QString hostIp);
         Q_INVOKABLE void stop();

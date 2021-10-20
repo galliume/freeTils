@@ -71,12 +71,13 @@ namespace Freetils {
 
     void FbDeployer::launch(QString rootFolder)
     {
-        qDebug() << "launch";
+        qDebug() << "launch rootFolder" << rootFolder;
     }
 
     void FbDeployer::errorOccurred(QNetworkReply::NetworkError code)
     {
         qWarning() << "Error occured " << code;
+        emit logged("Error when");
     }
 
     void FbDeployer::response(QNetworkReply *reply)
@@ -92,7 +93,7 @@ namespace Freetils {
 
             if (m_Out->isValid()) {
                 connect(m_Out, &QTcpSocket::readyRead, this, &FbDeployer::out);
-                //connect(socket, &QWebSocket::disconnected, this, &FbDeployer::onSocketDisconnected);
+                connect(m_Out, &QTcpSocket::disconnected, this, &FbDeployer::socketOutDisconnected);
             }
 
             m_Err = new QTcpSocket(this);
@@ -100,7 +101,7 @@ namespace Freetils {
 
             if (m_Err->isValid()) {
                 connect(m_Err, &QTcpSocket::readyRead, this, &FbDeployer::err);
-                //connect(socket, &QWebSocket::disconnected, this, &FbDeployer::onSocketDisconnected);
+                connect(m_Err, &QTcpSocket::disconnected, this, &FbDeployer::socketErrDisconnected);
             }
 
             m_Qml = new QTcpSocket(this);
@@ -108,13 +109,14 @@ namespace Freetils {
 
             if (m_Qml->isValid()) {
                 connect(m_Qml, &QTcpSocket::readyRead, this, &FbDeployer::qml);
-                //connect(socket, &QWebSocket::disconnected, this, &FbDeployer::onSocketDisconnected);
+                connect(m_Qml, &QTcpSocket::disconnected, this, &FbDeployer::socketQmlDisconnected);
             }
         }
         else
         {
             QString err = reply->errorString();
-            qDebug() << err;
+            qDebug() << "qnam response " << err;
+             emit logged(err);
         }
 
         reply->deleteLater();
@@ -141,6 +143,24 @@ namespace Freetils {
         qDebug() << "QML : " << qml;
     }
 
+    void FbDeployer::socketOutDisconnected()
+    {
+        qDebug() << "out socket disconnected";
+         emit logged("out socket disconnected");
+    }
+
+    void FbDeployer::socketErrDisconnected()
+    {
+        qDebug() << "err socket disconnected";
+        emit logged("err socket disconnected");
+    }
+
+    void FbDeployer::socketQmlDisconnected()
+    {
+        qDebug() << "qml socket disconnected";
+        emit logged("qml socket disconnected");
+    }
+
     void FbDeployer::stop()
     {
         emit terminate();
@@ -149,6 +169,7 @@ namespace Freetils {
     void FbDeployer::resultReady(QPair<bool, QString>status)
     {
         if (status.first) {
+            emit logged("Deploying");
             deploy();
         }
 
@@ -161,6 +182,7 @@ namespace Freetils {
             workerThread.quit();
         }
 
+        emit logged("Server stopped");
         emit stoped(status.first, status.second);
     }
 }
