@@ -16,14 +16,24 @@ namespace Freetils {
         QHostAddress address;
         address.setAddress(m_HostIp);
 
-        if (this->listen(address, m_Port)) {
-            status.first = true;
-            status.second = "Server started on " + address.toString() + ":" + QString::number(m_Port);
-        } else {
-            status.first = false;
-            status.second = "Error : " + this->errorString();
-            qCritical() << status;
-        }
+//        if (this->listen(address, m_Port)) {
+//            status.first = true;
+//            status.second = "Server started on " + address.toString() + ":" + QString::number(m_Port);
+//        } else {
+//            status.first = false;
+//            status.second = "Error : " + this->errorString();
+//            qCritical() << status;
+//        }
+
+        QProcess php;
+        QStringList args;
+        QString addr = address.toString() + ":" + QString::number(m_Port);
+        args << "-S" << addr << "-t" << m_RootFolder;
+        php.start("php", args);
+        php.waitForStarted();
+
+        status.first = true;
+        status.second = "Server started on " + address.toString() + ":" + QString::number(m_Port);
 
         emit resultReady(status);
     }
