@@ -6,7 +6,12 @@ namespace Freetils {
         m_RootFolder = rootFolder;
         m_Port = port;
         m_HostIp = hostIp;
-        pool.setMaxThreadCount(50);
+        pool.setMaxThreadCount(1);
+    }
+
+    Server::~Server()
+    {
+        this->quit();
     }
 
     void Server::start()
@@ -25,12 +30,12 @@ namespace Freetils {
 //            qCritical() << status;
 //        }
 
-        QProcess php;
+        m_Php = new QProcess();
         QStringList args;
         QString addr = address.toString() + ":" + QString::number(m_Port);
         args << "-S" << addr << "-t" << m_RootFolder;
-        php.start("php", args);
-        php.waitForStarted();
+        m_Php->start("php", args);
+        m_Php->waitForStarted();
 
         status.first = true;
         status.second = "Server started on " + address.toString() + ":" + QString::number(m_Port);
@@ -40,6 +45,9 @@ namespace Freetils {
 
     void Server::quit()
     {
+        m_Php->close();
+        m_Php->kill();
+
         this->close();
 
         QPair<bool, QString>status;
@@ -58,7 +66,7 @@ namespace Freetils {
     void Server::incomingConnection(qintptr handle)
     {
         Client* client = new Client(nullptr, m_RootFolder, handle);
-        //this->addPendingConnection(client->getSocket());
+        this->addPendingConnection(client->getSocket());
         client->setAutoDelete(true);
         pool.start(client);
     }

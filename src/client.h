@@ -19,6 +19,7 @@ namespace Freetils {
         Q_OBJECT
     public:
         explicit Client(QObject *parent = nullptr, QString rootFolder = "", qintptr handle = 0);
+        ~Client();
         QTcpSocket* getSocket() { return m_Socket; };
 
     signals:

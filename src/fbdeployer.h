@@ -41,7 +41,7 @@ namespace Freetils {
         const quint16 m_LocalPort = 9000;
         QString m_FbxIP;
         QString m_HostIP;
-        QNetworkAccessManager m_Qnam;
+        QNetworkAccessManager* m_Qnam;
         QNetworkReply* m_Reply;
 
         QNetworkInterface m_Interface;
@@ -53,6 +53,7 @@ namespace Freetils {
         QTcpSocket* m_Qml;
 
         void deploy();
+        void disconnect();
 
     public slots:
         void resultReady(QPair<bool, QString>status);

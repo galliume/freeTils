@@ -7,6 +7,12 @@ namespace Freetils {
         m_RootFolder = rootFolder;
     }
 
+    Client::~Client()
+    {
+        m_Socket->close();
+        this->disconnect();
+    }
+
     void Client::run()
     {
         m_Socket = new QTcpSocket(nullptr);//multithread => no parent

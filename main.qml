@@ -266,12 +266,47 @@ Window {
         }
     }
 
+    Row {
+        id: filter
+        spacing: 0
+        anchors.top: deployRow.bottom
+
+        Rectangle {
+            width: 100
+            height: root.menuHeight
+            color: root.labelColor
+
+            Text {
+                text: "Logs filter"
+                font.family: root.fontFamily
+                font.pointSize: root.fontPointSize
+                color: "white"
+                width: parent.width
+                height: parent.height
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+        }
+
+        Rectangle {
+            width: root.width - 100
+            height: root.menuHeight
+            color: root.menuColor
+
+            TextInput {
+                id: txtFilter
+                width: parent.width
+                height: parent.height
+            }
+        }
+    }
+
     Rectangle {
         id: content
-        anchors.top: deployRow.bottom
+        anchors.top: filter.bottom
         width: root.width
-        height: root.height - folderRow.height - deployRow.height - selectFbx.height
-        border.width: 5
+        height: root.height - folderRow.height - deployRow.height - selectFbx.height - filter.height
+        border.width: 3
         border.color: contentColor
 
         ScrollView {

@@ -24,8 +24,8 @@
 - [x] create a tcpserver to serve project files
 - [x] add root project dir selection
 - [x] deploy app to the freebox via JsonRpc
+- [x] close properly the app and disconnect from stb
 - [ ] display logs with filtering options
-- [ ] close properly the app and disconnect from stb
 - [ ] control the app via remote keyboard
 - [ ] launch app with qmlscene
 - [ ] cleaning and refactoring
