@@ -10,26 +10,31 @@
 - maybe hot reload
 
 ## STB who will be supported :
-- [ ] revolution
+- [x] revolution
 - [ ] delta
 - [ ] mini 4K
 
 ## OS who will be supported :
-- [ ] linux
-- [ ] windows
-- [ ] mac
+- [x] linux
+- [x] windows
+- [x] mac
 
 ## @Todo
 - [x] auto detect freebox on network
 - [x] create a tcpserver to serve project files
 - [x] add root project dir selection
-- [ ] deploy app to the freebox via JsonRpc
-- [ ] launch app with qmlscene
+- [x] deploy app to the freebox via JsonRpc
 - [ ] display logs with filtering options
+- [ ] close properly the app and disconnect from stb
+- [ ] control the app via remote keyboard
+- [ ] launch app with qmlscene
 - [ ] cleaning and refactoring
 - [ ] make it work for the mini 4K android via ADB
-- [ ] control the app via remote keyboard
 - [ ] see if hot reload is possible ?
+- [ ] make home made file server work instead of using PHP internal server
+
+## Setup requirements
+- PHP 7 must be installed (internal server is used for file serving, should be temporary)
 
 ## Build with
 - Qt 6 / C++2a
