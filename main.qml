@@ -88,10 +88,27 @@ Window {
 
     Connections {
         target: fbDeploy
-        function onLogged(out) {
-            logs.append(out);
+        function onLogged(out, lvl) {
+
+            var color = "black";
+            var background = "white";
+            var fontWeight = "";
+
+            if ("err" === lvl) {
+                color = "white";
+                background = "red";
+                fontWeight = "font-weight:bold";
+            }
+
+            var log = `<p style=\"background-color:${background};color:${color}\;${fontWeight}">`;
+            log += out;
+            log += "</p> "
+
+            logs.append(log);
         }
     }
+
+
 
     ListModel {
         id: lstIP
@@ -314,6 +331,7 @@ Window {
 
             TextArea {
                 id: logs
+                textFormat: Text.RichText
                 readOnly: true
             }
         }

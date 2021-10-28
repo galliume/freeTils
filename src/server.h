@@ -27,7 +27,7 @@ namespace Freetils {
         // QTcpServer interface
     protected:
         // /!\ this change with Qt version...
-        virtual void incomingConnection(qintptr handle) Q_DECL_OVERRIDE;
+//        virtual void incomingConnection(qintptr handle) Q_DECL_OVERRIDE;
 
     private:
         QThreadPool pool;

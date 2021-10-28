@@ -83,7 +83,7 @@ namespace Freetils {
     void FbDeployer::errorOccurred(QNetworkReply::NetworkError code)
     {
         qWarning() << "Error occured " << code;
-        emit logged("Error when");
+        emit logged("Error when", "err");
     }
 
     void FbDeployer::response(QNetworkReply *reply)
@@ -126,41 +126,71 @@ namespace Freetils {
         {
             QString err = reply->errorString();
             qWarning() << "Error while sending json rpc request to stb : " << err;
-            emit logged(err);
+            emit logged(err, "err");
         }        
+    }
+
+    void FbDeployer::log(QByteArray text)
+    {
+        //@todo real ansi code parsing ?
+        QRegularExpression regex("(?:\\\x1B\\[0m)(.+)(?:\\\x1B\\[0m)");
+        QRegularExpressionMatch match = regex.match(text);
+
+        if (match.hasMatch()) {
+            QString matched = match.captured(1);
+
+            QRegularExpression regexText("(?:\\\x1B\\[0m)(.+)");
+            QRegularExpressionMatch matchBis = regexText.match(matched);
+
+            if (matchBis.hasMatch()) {
+                QString matchedBis = matchBis.captured(1);
+
+                 if (matchBis.hasMatch()) {
+                     matched = matchedBis;
+                 }
+            }
+
+            QString lvl = "info";
+
+            if (text.contains("1;33m")) {
+                lvl = "err";
+            }
+
+            emit logged(QVariant(matched), QVariant(lvl));
+        }
     }
 
     void FbDeployer::out()
     {
         QByteArray out = m_Out->readAll();
-        emit logged(QVariant(out));
+        this->log(out);
     }
 
     void FbDeployer::err()
     {
         QByteArray err = m_Err->readAll();
-        emit logged(QVariant(err));
+        this->log(err);
     }
 
     void FbDeployer::qml()
     {
         QByteArray qml = m_Qml->readAll();
-        emit logged(QVariant(qml));
+        this->log(qml);
     }
 
     void FbDeployer::socketOutDisconnected()
     {
-         emit logged("out socket disconnected");
+         //emit logged("out socket disconnected", "info");
     }
 
     void FbDeployer::socketErrDisconnected()
     {
-        emit logged("err socket disconnected");
+        //emit logged("err socket disconnected", "info");
     }
 
     void FbDeployer::socketQmlDisconnected()
     {
-        emit logged("qml socket disconnected");
+        //emit logged("qml socket disconnected", "info");
     }
 
     void FbDeployer::stop()
@@ -183,7 +213,6 @@ namespace Freetils {
     void FbDeployer::resultReady(QPair<bool, QString>status)
     {
         if (status.first) {
-            emit logged("Deploying");
             deploy();
         }
 
@@ -196,7 +225,6 @@ namespace Freetils {
             workerThread.quit();
         }
 
-        emit logged("Server stopped");
         emit stoped(status.first, status.second);
     }
 }

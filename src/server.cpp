@@ -63,11 +63,11 @@ namespace Freetils {
         emit(resultEnded(status));
     }
 
-    void Server::incomingConnection(qintptr handle)
-    {
-        Client* client = new Client(nullptr, m_RootFolder, handle);
-        this->addPendingConnection(client->getSocket());
-        client->setAutoDelete(true);
-        pool.start(client);
-    }
+//    void Server::incomingConnection(qintptr handle)
+//    {
+//        Client* client = new Client(nullptr, m_RootFolder, handle);
+//        this->addPendingConnection(client->getSocket());
+//        client->setAutoDelete(true);
+//        pool.start(client);
+//    }
 }

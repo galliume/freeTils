@@ -32,6 +32,7 @@
 - [ ] make it work for the mini 4K android via ADB
 - [ ] see if hot reload is possible ?
 - [ ] make home made file server work instead of using PHP internal server
+- [ ] make a cmd line version (and a VS code extension ?)
 
 ## Setup requirements
 - PHP 7 must be installed (internal server is used for file serving, should be temporary)

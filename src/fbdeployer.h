@@ -54,6 +54,7 @@ namespace Freetils {
 
         void deploy();
         void disconnect();
+        void log(QByteArray text);
 
     public slots:
         void resultReady(QPair<bool, QString>status);
@@ -66,7 +67,7 @@ namespace Freetils {
         void terminate();
         void deployed(QVariant isDeployed, QVariant status);
         void stoped(QVariant isStoped, QVariant status);
-        void logged(QVariant log);
+        void logged(QVariant log, QVariant lvl);
     };
 }
 #endif // FBDEPLOYER_H
