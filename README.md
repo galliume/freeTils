@@ -39,3 +39,6 @@
 
 ## Build with
 - Qt 6 / C++2a
+
+## Screenshots
+![first working version](screenshots/freeTils.png?raw=true "FreeTils")
