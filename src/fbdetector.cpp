@@ -45,9 +45,6 @@ namespace Freetils {
                     qWarning() << "failed to join multicast " << interface << ":" << socketListener->errorString();
                  }
 
-//                 connect(socketListener, &QUdpSocket::stateChanged, this, &FbDetector::listenerStateChanged);
-//                 connect(socketListener,  &QUdpSocket::readyRead, this, &FbDetector::listenerReceived);
-
                  QPair<QUdpSocket*, const QNetworkInterface*>listenerPair;
                  listenerPair.first = socketListener;
                  listenerPair.second = &interface;
@@ -105,34 +102,6 @@ namespace Freetils {
         }
     }
 
-//    void FbDetector::listenerReceived()
-//    {
-//        for (auto listener : m_SocketListener) {
-//            while (listener.first->hasPendingDatagrams()) {
-//                QNetworkDatagram datagram = listener.first->receiveDatagram();
-
-////                if (m_HostIP.isEmpty()) {
-////                    m_HostIP = datagram.senderAddress().toString();
-////                    emit hostIpFounded(m_HostIP);
-////                }
-//            }
-//        }
-//    }
-
-//    void FbDetector::listenerStateChanged(QAbstractSocket::SocketState state)
-//    {
-//        Q_UNUSED(state);
-
-//        for (auto listener : m_SocketListener) {
-
-//            listener.first->setMulticastInterface(*listener.second);
-
-//            if (!listener.first->joinMulticastGroup(QHostAddress(QLatin1String(m_ADDR4)), *listener.second)) {
-//                qWarning() << "listener failed to join :" << listener.first->errorString();
-//            }
-//        }
-//    }
-
     void FbDetector::senderReceived()
     {
         for (auto sender : m_SocketSender) {
@@ -141,15 +110,10 @@ namespace Freetils {
 
                 if (datagram.data().contains(m_FbNt)) {
 
+                    //@todo detect device type (revolution ? mini 4K ? delta ? unsuported ? )
                     Device* device = new Device(datagram.senderAddress().toString(), "revolution");
 
                     if (!m_DevicesList.contains(device)) {
-
-                        if (m_HostIP.isEmpty()) {
-                            m_HostIP = sender.first->localAddress().toString();
-                            emit hostIpFounded(m_HostIP);
-                        }
-
                         m_DevicesList.append(device);
                         emit scanned(QVariant(device->getIp()));
                     }

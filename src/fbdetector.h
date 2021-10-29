@@ -31,8 +31,6 @@ namespace Freetils {
         QList<Device*> m_DevicesList;
 
     private slots:
-//        void listenerReceived();
-//        void listenerStateChanged(QAbstractSocket::SocketState state);
         void senderReceived();
         void senderStateChanged(QAbstractSocket::SocketState state);
 
