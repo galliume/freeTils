@@ -19,6 +19,9 @@
 - [x] windows
 - [x] mac
 
+## Help
+- Consult the wiki page [help](https://github.com/galliume/freeTils/wiki/Help)
+
 ## @Todo
 - [x] auto detect freebox on network
 - [x] create a tcpserver to serve project files
