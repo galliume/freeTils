@@ -45,8 +45,7 @@ namespace Freetils {
 
     void Server::quit()
     {
-        m_Php->close();
-        m_Php->kill();
+        m_Php->terminate();
 
         this->close();
 

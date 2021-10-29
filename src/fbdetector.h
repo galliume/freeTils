@@ -9,6 +9,7 @@
 #include <QNetworkDatagram>
 #include <QPair>
 #include <QList>
+#include "device.h"
 
 namespace Freetils {
     class FbDetector : public QObject
@@ -27,12 +28,12 @@ namespace Freetils {
         QList<QPair<QUdpSocket*, const QNetworkInterface*>> m_SocketListener;
         QList<QPair<QUdpSocket*, const QNetworkInterface*>> m_SocketSender;
 
-        QList<QHostAddress> m_Fbx;
+        QList<Device*> m_DevicesList;
 
     private slots:
-        void listenerReceived();
+//        void listenerReceived();
+//        void listenerStateChanged(QAbstractSocket::SocketState state);
         void senderReceived();
-        void listenerStateChanged(QAbstractSocket::SocketState state);
         void senderStateChanged(QAbstractSocket::SocketState state);
 
     signals:

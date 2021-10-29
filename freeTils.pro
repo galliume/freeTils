@@ -13,6 +13,7 @@ DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs depr
 SOURCES += \
         main.cpp \
         src/client.cpp \
+        src/device.cpp \
         src/fbdeployer.cpp \
         src/fbdetector.cpp \
         src/server.cpp
@@ -33,6 +34,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     src/client.h \
+    src/device.h \
     src/fbdeployer.h \
     src/fbdetector.h \
     src/server.h

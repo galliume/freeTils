@@ -45,8 +45,8 @@ namespace Freetils {
                     qWarning() << "failed to join multicast " << interface << ":" << socketListener->errorString();
                  }
 
-                 connect(socketListener, &QUdpSocket::stateChanged, this, &FbDetector::listenerStateChanged);
-                 connect(socketListener,  &QUdpSocket::readyRead, this, &FbDetector::listenerReceived);
+//                 connect(socketListener, &QUdpSocket::stateChanged, this, &FbDetector::listenerStateChanged);
+//                 connect(socketListener,  &QUdpSocket::readyRead, this, &FbDetector::listenerReceived);
 
                  QPair<QUdpSocket*, const QNetworkInterface*>listenerPair;
                  listenerPair.first = socketListener;
@@ -105,49 +105,53 @@ namespace Freetils {
         }
     }
 
-    void FbDetector::listenerReceived()
-    {
-        for (auto listener : m_SocketListener) {
-            while (listener.first->hasPendingDatagrams()) {
-                QNetworkDatagram datagram = listener.first->receiveDatagram();
+//    void FbDetector::listenerReceived()
+//    {
+//        for (auto listener : m_SocketListener) {
+//            while (listener.first->hasPendingDatagrams()) {
+//                QNetworkDatagram datagram = listener.first->receiveDatagram();
 
-//                if (m_HostIP.isEmpty()) {
-//                    m_HostIP = datagram.senderAddress().toString();
-//                    emit hostIpFounded(m_HostIP);
-//                }
-            }
-        }
-    }
+////                if (m_HostIP.isEmpty()) {
+////                    m_HostIP = datagram.senderAddress().toString();
+////                    emit hostIpFounded(m_HostIP);
+////                }
+//            }
+//        }
+//    }
 
-    void FbDetector::listenerStateChanged(QAbstractSocket::SocketState state)
-    {
-        Q_UNUSED(state);
+//    void FbDetector::listenerStateChanged(QAbstractSocket::SocketState state)
+//    {
+//        Q_UNUSED(state);
 
-        for (auto listener : m_SocketListener) {
+//        for (auto listener : m_SocketListener) {
 
-            listener.first->setMulticastInterface(*listener.second);
+//            listener.first->setMulticastInterface(*listener.second);
 
-            if (!listener.first->joinMulticastGroup(QHostAddress(QLatin1String(m_ADDR4)), *listener.second)) {
-                qWarning() << "listener failed to join :" << listener.first->errorString();
-            }
-        }
-    }
+//            if (!listener.first->joinMulticastGroup(QHostAddress(QLatin1String(m_ADDR4)), *listener.second)) {
+//                qWarning() << "listener failed to join :" << listener.first->errorString();
+//            }
+//        }
+//    }
 
     void FbDetector::senderReceived()
     {
         for (auto sender : m_SocketSender) {
             while (sender.first->hasPendingDatagrams()) {
                 QNetworkDatagram datagram = sender.first->receiveDatagram();
+
                 if (datagram.data().contains(m_FbNt)) {
-                    if (!m_Fbx.contains(datagram.senderAddress())) {
+
+                    Device* device = new Device(datagram.senderAddress().toString(), "revolution");
+
+                    if (!m_DevicesList.contains(device)) {
 
                         if (m_HostIP.isEmpty()) {
                             m_HostIP = sender.first->localAddress().toString();
                             emit hostIpFounded(m_HostIP);
                         }
 
-                        m_Fbx.append(datagram.senderAddress());
-                        emit scanned(QVariant(datagram.senderAddress().toString()));
+                        m_DevicesList.append(device);
+                        emit scanned(QVariant(device->getIp()));
                     }
                 }
             }
