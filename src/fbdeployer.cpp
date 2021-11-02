@@ -94,7 +94,6 @@ namespace Freetils {
 
             QJsonDocument jsonDoc = QJsonDocument::fromJson(contents.toUtf8());
 
-            qDebug() << " state " << m_Out->state();
             if (m_Out->state() == QTcpSocket::SocketState::UnconnectedState) {
                 m_Out->connectToHost(QHostAddress(m_FbxIP), jsonDoc["result"]["stdout_port"].toDouble());
 
@@ -113,8 +112,8 @@ namespace Freetils {
                 }
             }
 
-            if (m_Out->state() == QTcpSocket::SocketState::UnconnectedState) {
-                m_Out->connectToHost(QHostAddress(m_FbxIP), jsonDoc["result"]["qml_port"].toDouble());
+            if (m_Qml->state() == QTcpSocket::SocketState::UnconnectedState) {
+                m_Qml->connectToHost(QHostAddress(m_FbxIP), jsonDoc["result"]["qml_port"].toDouble());
 
                 if (m_Qml->isValid()) {
                     connect(m_Qml, &QTcpSocket::readyRead, this, &FbDeployer::qml);
