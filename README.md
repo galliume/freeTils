@@ -19,17 +19,22 @@
 - [x] windows
 - [x] mac
 
+## Help
+- Consult the wiki page [help](https://github.com/galliume/freeTils/wiki/Help)
+
 ## @Todo
 - [x] auto detect freebox on network
 - [x] create a tcpserver to serve project files
 - [x] add root project dir selection
 - [x] deploy app to the freebox via JsonRpc
 - [x] close properly the app and disconnect from stb
-- [ ] display logs with filtering options
+- [x] display logs
+- [ ] cleaning and refactoring
+- [ ] detect device type (revolution, delta, mini 4k or unsuported)
+- [ ] make it work for the mini 4K android via ADB
 - [ ] control the app via remote keyboard
 - [ ] launch app with qmlscene
-- [ ] cleaning and refactoring
-- [ ] make it work for the mini 4K android via ADB
+- [ ] filter logs
 - [ ] see if hot reload is possible ?
 - [ ] make home made file server work instead of using PHP internal server
 - [ ] make a cmd line version (and a VS code extension ?)
