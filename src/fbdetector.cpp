@@ -111,11 +111,11 @@ namespace Freetils {
                 if (datagram.data().contains(m_FbNt)) {
 
                     //@todo detect device type (revolution ? mini 4K ? delta ? unsuported ? )
-                    Device* device = new Device(datagram.senderAddress().toString(), "revolution");
+                    Device device = Device(datagram.senderAddress().toString(), "revolution");
 
                     if (!m_DevicesList.contains(device)) {
                         m_DevicesList.append(device);
-                        emit scanned(QVariant(device->getIp()));
+                        emit scanned(QVariant(device.getIp()));
                     }
                 }
             }

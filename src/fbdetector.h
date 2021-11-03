@@ -28,7 +28,7 @@ namespace Freetils {
         QList<QPair<QUdpSocket*, const QNetworkInterface*>> m_SocketListener;
         QList<QPair<QUdpSocket*, const QNetworkInterface*>> m_SocketSender;
 
-        QList<Device*> m_DevicesList;
+        QList<Device> m_DevicesList;
 
     private slots:
         void senderReceived();
