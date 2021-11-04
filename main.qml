@@ -21,7 +21,6 @@ Window {
     readonly property string fontFamily: "Helvetica"
     readonly property int fontPointSize: 8
     readonly property int menuHeight: 30
-    property string hostIp
 
     Settings {
         id: settings
@@ -49,13 +48,6 @@ Window {
         target: freeTilsApp
         function onRefreshStbList(data) {
             lstIP.append({"ip": data })
-        }
-    }
-
-    Connections {
-        target: fbDetect
-        function onHostIpFounded(ip) {
-            root.hostIp = ip;
         }
     }
 
@@ -249,7 +241,7 @@ Window {
                 onClicked: {
                     if (0 !== lstFbx.currentIndex) {
                         settings.selectedBox = lstFbx.currentIndex;
-                        fbDeploy.serve(selectedRootProject.text, lstFbx.currentValue, root.hostIp);
+                        freeTilsApp.deployApp(selectedRootProject.text, lstFbx.currentIndex);
                     } else {
                         deployStatus.text = "Please select a Freebox";
                         deployStatus.color = "red";

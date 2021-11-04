@@ -19,15 +19,6 @@ namespace Freetils {
         m_FbxIP = fbxIp;        
         m_HostIP = hostIp;
 
-        //FolderDialog returns a string like file:// on unix or file:/// on windows...
-        //so file://{/} is removed then if linux OS prepend only one / for absolute root dir project path
-        QRegularExpression regex("(file:\\/{2,3})");
-        rootFolder.replace(regex, "");
-
-        if(QOperatingSystemVersion::Windows != QOperatingSystemVersion::currentType()) {
-            rootFolder.prepend("/");
-        }
-
         Server* server = new Server(nullptr, rootFolder, m_HostIP, m_LocalPort);
 
         server->moveToThread(&workerThread);

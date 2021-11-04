@@ -36,7 +36,7 @@ namespace Freetils {
         void disconnect();
         void log(QByteArray text);
 
-        Q_INVOKABLE void serve(QString rootFolder, QString fbxIp, QString hostIp);
+        void serve(QString rootFolder, QString fbxIp, QString hostIp);
         Q_INVOKABLE void stop();
         Q_INVOKABLE void launch(QString rootFolder);
 

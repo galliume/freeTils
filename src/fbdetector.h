@@ -32,7 +32,7 @@ namespace Freetils {
         void senderStateChanged(QAbstractSocket::SocketState state);
 
     signals:
-        void newDeviceDetected(QString deviceAddress);
+        void newDeviceDetected(QString deviceAddress, QString hostAddress);
     };
 }
 #endif // FBDETECTOR_H

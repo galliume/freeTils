@@ -105,7 +105,7 @@ namespace Freetils {
                 QNetworkDatagram datagram = sender.first->receiveDatagram();
 
                 if (datagram.data().contains(m_FbNt)) {
-                    emit newDeviceDetected(datagram.senderAddress().toString());
+                    emit newDeviceDetected(datagram.senderAddress().toString(), datagram.destinationAddress().toString());
                 }
             }
         }

@@ -16,13 +16,15 @@ namespace Freetils {
             MINI4K
         };
 
-        Device(QString ip, STB_TYPES type);
-        QString getIp() { return m_Ip; };
+        Device(QString ip, QString hostIp, STB_TYPES type);
+        QString const getIp() const { return m_Ip; };
+        QString const getHostIp() const { return m_HostIp; };
         STB_TYPES getType() { return m_Type; };
         bool operator==(const Device& device) const;
 
     private:
         QString m_Ip;
+        QString m_HostIp;
         STB_TYPES m_Type;
     };
 }
