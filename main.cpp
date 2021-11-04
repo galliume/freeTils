@@ -2,8 +2,7 @@
 #include <QQmlApplicationEngine>
 #include <QIcon>
 
-#include "src/fbdetector.h"
-#include "src/fbdeployer.h"
+#include "src/freetilsapp.h"
 
 int main(int argc, char *argv[])
 {
@@ -19,8 +18,7 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
-    qmlRegisterType<Freetils::FbDetector>("com.galliume.FbDetector", 1, 0, "FbDetector");
-    qmlRegisterType<Freetils::FbDeployer>("com.galliume.FbDeployer", 1, 0, "FbDeployer");
+    qmlRegisterType<Freetils::FreeTilsApp>("com.galliume.FreeTilsApp", 1, 0, "FreeTilsApp");
 
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

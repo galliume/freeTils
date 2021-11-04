@@ -10,7 +10,7 @@ namespace Freetils {
 
     FbDeployer::~FbDeployer()
     {
-        this->disconnect();
+        this->stop();
     }
 
     void FbDeployer::serve(QString rootFolder, QString fbxIp, QString hostIp)
@@ -19,22 +19,12 @@ namespace Freetils {
         m_FbxIP = fbxIp;        
         m_HostIP = hostIp;
 
-        //FolderDialog returns a string like file:// on unix or file:/// on windows...
-        //so file://{/} is removed then if linux OS prepend only one / for absolute root dir project path
-        QRegularExpression regex("(file:\\/{2,3})");
-        rootFolder.replace(regex, "");
-
-        if(QOperatingSystemVersion::Windows != QOperatingSystemVersion::currentType()) {
-            rootFolder.prepend("/");
-        }
-
         Server* server = new Server(nullptr, rootFolder, m_HostIP, m_LocalPort);
 
         server->moveToThread(&workerThread);
 
         connect(&workerThread, &QThread::finished, server, &QObject::deleteLater);
         connect(this, &FbDeployer::operate, server, &Server::start);
-        connect(this, &FbDeployer::terminate, server, &Server::quit);
         connect(server, &Server::resultReady, this, &FbDeployer::resultReady);
         connect(server, &Server::resultEnded, this, &FbDeployer::resultEnded);
 
@@ -124,7 +114,6 @@ namespace Freetils {
         else
         {
             QString err = reply->errorString();
-            qWarning() << "Error while sending json rpc request to stb : " << err;
             emit logged(err, "err");
         }        
     }
@@ -155,7 +144,7 @@ namespace Freetils {
                 lvl = "err";
             }
 
-            emit logged(QVariant(matched), QVariant(lvl));
+            emit logged(matched, lvl);
         }
     }
 
@@ -194,12 +183,6 @@ namespace Freetils {
 
     void FbDeployer::stop()
     {
-        this->disconnect();
-        emit terminate();
-    }
-
-    void FbDeployer::disconnect()
-    {
         m_Qml->close();
         m_Err->close();
         m_Out->close();
@@ -211,19 +194,11 @@ namespace Freetils {
 
     void FbDeployer::resultReady(QPair<bool, QString>status)
     {
-        if (status.first) {
-            deploy();
-        }
-
-        emit deployed(status.first, status.second);
+         emit deployed(status);
     }
 
     void FbDeployer::resultEnded(QPair<bool, QString>status)
     {
-        if (status.first) {
-            workerThread.quit();
-        }
-
-        emit stoped(status.first, status.second);
+        emit stopped(status);
     }
 }

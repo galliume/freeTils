@@ -32,8 +32,10 @@ namespace Freetils {
         void socketOutDisconnected();
         void socketErrDisconnected();
         void socketQmlDisconnected();
+        void deploy();
+        void log(QByteArray text);
 
-        Q_INVOKABLE void serve(QString rootFolder, QString fbxIp, QString hostIp);
+        void serve(QString rootFolder, QString fbxIp, QString hostIp);
         Q_INVOKABLE void stop();
         Q_INVOKABLE void launch(QString rootFolder);
 
@@ -52,10 +54,6 @@ namespace Freetils {
         QTcpSocket* m_Err;
         QTcpSocket* m_Qml;
 
-        void deploy();
-        void disconnect();
-        void log(QByteArray text);
-
     public slots:
         void resultReady(QPair<bool, QString>status);
         void resultEnded(QPair<bool, QString>status);
@@ -64,10 +62,9 @@ namespace Freetils {
 
     signals:
         void operate();
-        void terminate();
-        void deployed(QVariant isDeployed, QVariant status);
-        void stoped(QVariant isStoped, QVariant status);
-        void logged(QVariant log, QVariant lvl);
+        void deployed(QPair<bool, QString>status);
+        void stopped(QPair<bool, QString>status);
+        void logged(QString log, QString lvl);
     };
 }
 #endif // FBDEPLOYER_H

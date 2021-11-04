@@ -13,8 +13,10 @@ DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs depr
 SOURCES += \
         main.cpp \
         src/client.cpp \
+        src/device.cpp \
         src/fbdeployer.cpp \
         src/fbdetector.cpp \
+        src/freetilsapp.cpp \
         src/server.cpp
 
 RESOURCES += \
@@ -33,8 +35,10 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     src/client.h \
+    src/device.h \
     src/fbdeployer.h \
     src/fbdetector.h \
+    src/freetilsapp.h \
     src/server.h
 
 unix:RC_ICONS = += icons/icon.png
