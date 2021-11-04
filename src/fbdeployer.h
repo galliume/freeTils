@@ -33,7 +33,6 @@ namespace Freetils {
         void socketErrDisconnected();
         void socketQmlDisconnected();
         void deploy();
-        void disconnect();
         void log(QByteArray text);
 
         void serve(QString rootFolder, QString fbxIp, QString hostIp);
@@ -63,10 +62,9 @@ namespace Freetils {
 
     signals:
         void operate();
-        void terminate();
-        void deployed(QVariant isDeployed, QVariant status);
-        void stoped(QVariant isStoped, QVariant status);
-        void logged(QVariant log, QVariant lvl);
+        void deployed(QPair<bool, QString>status);
+        void stopped(QPair<bool, QString>status);
+        void logged(QString log, QString lvl);
     };
 }
 #endif // FBDEPLOYER_H

@@ -4,8 +4,6 @@ import QtQuick.Controls 2.12
 import Qt.labs.platform 1.1
 import Qt.labs.settings 1.0
 
-import com.galliume.FbDetector 1.0
-import com.galliume.FbDeployer 1.0
 import com.galliume.FreeTilsApp 1.0
 
 Window {
@@ -28,20 +26,16 @@ Window {
         property int selectedBox: 0
     }
 
-    FbDetector {
-        id: fbDetect
-    }
-
-    FbDeployer {
-        id: fbDeploy
-    }
-
     FreeTilsApp {
         id: freeTilsApp
     }
 
     Component.onCompleted: {
         freeTilsApp.detectDevices();
+    }
+
+    Component.onDestruction: {
+        freeTilsApp.stop();
     }
 
     Connections {
@@ -52,39 +46,15 @@ Window {
     }
 
     Connections {
-        target: fbDeploy
-        function onDeployed(isDeployed, status) {
-            if (isDeployed) {
-                deployStatus.color = "green";
-                deployBtn.visible = false;
-                stopBtn.visible = true;
-            } else {
-                deployStatus.color = "red";
-                deployBtn.visible = true;
-                stopBtn.visible = false;
-            }
-
+        target: freeTilsApp
+        function onServerUpdated(isOk, status) {
+            deployStatus.color = (isOk) ? "green" : "red";
             deployStatus.text = status;
         }
     }
 
     Connections {
-        target: fbDeploy
-        function onStoped(isStoped, status) {
-            if (isStoped) {
-                deployBtn.visible = true;
-                stopBtn.visible = false;
-                deployStatus.color = "green";
-                deployStatus.text = status;
-            } else {
-                deployStatus.color = "red";
-                deployStatus.text = status;
-            }
-        }
-    }
-
-    Connections {
-        target: fbDeploy
+        target: freeTilsApp
         function onLogged(out, lvl) {
 
             var color = "black";
@@ -104,8 +74,6 @@ Window {
             logs.append(log);
         }
     }
-
-
 
     ListModel {
         id: lstIP
@@ -228,7 +196,7 @@ Window {
                 width: parent.width - 120
                 height: parent.height
                 onClicked: {
-                    fbDeploy.launch(selectedRootProject.text);
+                    //fbDeploy.launch(selectedRootProject.text);
                 }
             }
 
@@ -242,6 +210,8 @@ Window {
                     if (0 !== lstFbx.currentIndex) {
                         settings.selectedBox = lstFbx.currentIndex;
                         freeTilsApp.deployApp(selectedRootProject.text, lstFbx.currentIndex);
+                        deployBtn.visible = false;
+                        stopBtn.visible = true;
                     } else {
                         deployStatus.text = "Please select a Freebox";
                         deployStatus.color = "red";
@@ -256,7 +226,9 @@ Window {
                 height: parent.height
                 anchors.left: launchBtn.right
                 onClicked: {
-                    fbDeploy.stop();
+                    freeTilsApp.stop();
+                    deployBtn.visible = true;
+                    stopBtn.visible = false;
                 }
             }
         }

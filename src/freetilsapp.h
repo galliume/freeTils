@@ -16,9 +16,12 @@ namespace Freetils {
 
         Q_INVOKABLE void detectDevices();
         Q_INVOKABLE void deployApp(QString rootFolder, int currentIndex);
+        Q_INVOKABLE void stop();
 
     private:
         void newDeviceDetected(QString deviceAdress, QString hostAddress);
+        void serverStatusUpdated(QPair<bool, QString>status);
+        void logger(QString log, QString lvl);
 
     private:
         FbDetector* m_FbDetector;
@@ -29,6 +32,8 @@ namespace Freetils {
 
     signals:
         void refreshStbList(QString deviceAdress);
+        void serverUpdated(QVariant isDeployed, QVariant status);
+        void logged(QString log, QString lvl);
     };
 }
 
