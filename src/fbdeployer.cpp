@@ -10,7 +10,7 @@ namespace Freetils {
 
     FbDeployer::~FbDeployer()
     {
-        this->stop();
+
     }
 
     void FbDeployer::serve(QString rootFolder, QString fbxIp, QString hostIp)
@@ -25,6 +25,7 @@ namespace Freetils {
 
         connect(&workerThread, &QThread::finished, server, &QObject::deleteLater);
         connect(this, &FbDeployer::operate, server, &Server::start);
+        connect(this, &FbDeployer::serverQuit, server, &Server::quit);
         connect(server, &Server::resultReady, this, &FbDeployer::resultReady);
         connect(server, &Server::resultEnded, this, &FbDeployer::resultEnded);
 
@@ -58,7 +59,7 @@ namespace Freetils {
         QNetworkRequest request(url);
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-        m_Qnam->setTransferTimeout(5000);
+        m_Qnam->setTransferTimeout(2000);
         m_Reply = m_Qnam->post(request, jsonDoc.toJson());
 
         connect(m_Qnam, &QNetworkAccessManager::finished, this, &FbDeployer::response);
@@ -72,8 +73,8 @@ namespace Freetils {
 
     void FbDeployer::errorOccurred(QNetworkReply::NetworkError code)
     {
-        qWarning() << "Error occured " << code;
-        emit logged("Error when", "err");
+        Q_UNUSED(code);
+        emit logged("Error when connecting to stb", "err");
     }
 
     void FbDeployer::response(QNetworkReply *reply)
@@ -83,6 +84,17 @@ namespace Freetils {
             QString contents = QString::fromUtf8(reply->readAll()); 
 
             QJsonDocument jsonDoc = QJsonDocument::fromJson(contents.toUtf8());
+
+            if (!jsonDoc["error"].isUndefined()) {
+                emit logged(jsonDoc["error"]["message"].toString(), "err");
+                this->stop();
+
+                QPair<bool, QString>status;
+                status.first = false;
+                status.second = "STB is not ready, try again";
+                emit deployed(status);
+                return;
+            }
 
             if (m_Out->state() == QTcpSocket::SocketState::UnconnectedState) {
                 m_Out->connectToHost(QHostAddress(m_FbxIP), jsonDoc["result"]["stdout_port"].toDouble());
@@ -189,6 +201,7 @@ namespace Freetils {
 
         m_Reply = nullptr;
 
+        emit serverQuit();
         workerThread.quit();
     }
 

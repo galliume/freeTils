@@ -11,7 +11,7 @@ namespace Freetils {
 
     Server::~Server()
     {
-        this->quit();
+        //this->quit();
     }
 
     void Server::start()
@@ -45,8 +45,7 @@ namespace Freetils {
 
     void Server::quit()
     {
-        m_Php->terminate();
-
+        m_Php->close();
         this->close();
 
         QPair<bool, QString>status;

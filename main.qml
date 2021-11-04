@@ -50,6 +50,11 @@ Window {
         function onServerUpdated(isOk, status) {
             deployStatus.color = (isOk) ? "green" : "red";
             deployStatus.text = status;
+
+            if (!isOk) {
+                deployBtn.visible = true;
+                stopBtn.visible = false;
+            }
         }
     }
 
@@ -149,8 +154,25 @@ Window {
         }
 
         Rectangle {
+            width: 100
+            height: root.menuHeight
+            color: root.labelColor
+
+            Button {
+                id: refreshBtn
+                text: "Refresh"
+                width: parent.width
+                height: parent.height
+                onClicked: {
+
+                    freeTilsApp.detectDevices();
+                }
+            }
+        }
+
+        Rectangle {
            color: root.menuColor
-           width: root.width - 100
+           width: root.width - 200
            height: root.menuHeight
 
             ComboBox {
@@ -218,6 +240,7 @@ Window {
                     }
                 }
             }
+
             Button {
                 id: stopBtn
                 text: "Stop"

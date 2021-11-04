@@ -22,13 +22,12 @@ namespace Freetils {
         void newDeviceDetected(QString deviceAdress, QString hostAddress);
         void serverStatusUpdated(QPair<bool, QString>status);
         void logger(QString log, QString lvl);
+        QString cleanRootFolder(QString rootFolder);
 
     private:
         FbDetector* m_FbDetector;
         FbDeployer* m_FbDeployer;
-        QList<Device> m_DevicesList;
-
-        QString cleanRootFolder(QString rootFolder);
+        QList<Device> m_DevicesList;        
 
     signals:
         void refreshStbList(QString deviceAdress);

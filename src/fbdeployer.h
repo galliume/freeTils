@@ -62,6 +62,7 @@ namespace Freetils {
 
     signals:
         void operate();
+        void serverQuit();
         void deployed(QPair<bool, QString>status);
         void stopped(QPair<bool, QString>status);
         void logged(QString log, QString lvl);
