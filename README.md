@@ -29,7 +29,7 @@
 - [x] deploy app to the freebox via JsonRpc
 - [x] close properly the app and disconnect from stb
 - [x] display logs
-- [ ] cleaning and refactoring
+- [x] cleaning and refactoring
 - [ ] detect device type (revolution, delta, mini 4k or unsuported)
 - [ ] make it work for the mini 4K android via ADB
 - [ ] control the app via remote keyboard
