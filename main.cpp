@@ -2,6 +2,7 @@
 #include <QQmlApplicationEngine>
 #include <QIcon>
 
+#include "src/freetilsapp.h"
 #include "src/fbdetector.h"
 #include "src/fbdeployer.h"
 
@@ -19,6 +20,7 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
+    qmlRegisterType<Freetils::FreeTilsApp>("com.galliume.FreeTilsApp", 1, 0, "FreeTilsApp");
     qmlRegisterType<Freetils::FbDetector>("com.galliume.FbDetector", 1, 0, "FbDetector");
     qmlRegisterType<Freetils::FbDeployer>("com.galliume.FbDeployer", 1, 0, "FbDeployer");
 

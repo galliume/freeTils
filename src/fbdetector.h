@@ -17,26 +17,22 @@ namespace Freetils {
         Q_OBJECT
     public:
         explicit FbDetector(QObject *parent = nullptr);
-        Q_INVOKABLE void scan();
+        void scan();
+        void senderReceived();
 
     private:
         const char m_ADDR4[16] = "239.255.255.250";
         const quint16 m_Port = 1900;
         const char m_FbNt[10] = "fbx:devel";
-        QString m_HostIP;
 
         QList<QPair<QUdpSocket*, const QNetworkInterface*>> m_SocketListener;
         QList<QPair<QUdpSocket*, const QNetworkInterface*>> m_SocketSender;
 
-        QList<Device> m_DevicesList;
-
     private slots:
-        void senderReceived();
         void senderStateChanged(QAbstractSocket::SocketState state);
 
     signals:
-        void scanned(QVariant data);
-        void hostIpFounded(QString ip);
+        void newDeviceDetected(QString deviceAddress);
     };
 }
 #endif // FBDETECTOR_H

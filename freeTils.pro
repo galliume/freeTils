@@ -16,6 +16,7 @@ SOURCES += \
         src/device.cpp \
         src/fbdeployer.cpp \
         src/fbdetector.cpp \
+        src/freetilsapp.cpp \
         src/server.cpp
 
 RESOURCES += \
@@ -37,6 +38,7 @@ HEADERS += \
     src/device.h \
     src/fbdeployer.h \
     src/fbdetector.h \
+    src/freetilsapp.h \
     src/server.h
 
 unix:RC_ICONS = += icons/icon.png

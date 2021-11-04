@@ -32,6 +32,9 @@ namespace Freetils {
         void socketOutDisconnected();
         void socketErrDisconnected();
         void socketQmlDisconnected();
+        void deploy();
+        void disconnect();
+        void log(QByteArray text);
 
         Q_INVOKABLE void serve(QString rootFolder, QString fbxIp, QString hostIp);
         Q_INVOKABLE void stop();
@@ -51,10 +54,6 @@ namespace Freetils {
         QTcpSocket* m_Out;
         QTcpSocket* m_Err;
         QTcpSocket* m_Qml;
-
-        void deploy();
-        void disconnect();
-        void log(QByteArray text);
 
     public slots:
         void resultReady(QPair<bool, QString>status);

@@ -6,6 +6,7 @@ import Qt.labs.settings 1.0
 
 import com.galliume.FbDetector 1.0
 import com.galliume.FbDeployer 1.0
+import com.galliume.FreeTilsApp 1.0
 
 Window {
     id: root
@@ -36,13 +37,17 @@ Window {
         id: fbDeploy
     }
 
+    FreeTilsApp {
+        id: freeTilsApp
+    }
+
     Component.onCompleted: {
-        fbDetect.scan();
+        freeTilsApp.detectDevices();
     }
 
     Connections {
-        target: fbDetect
-        function onScanned(data) {
+        target: freeTilsApp
+        function onRefreshStbList(data) {
             lstIP.append({"ip": data })
         }
     }

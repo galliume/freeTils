@@ -11,7 +11,7 @@ namespace Freetils {
         if (QNetworkInterface::IsRunning) {
             const QList<QNetworkInterface>netInf = QNetworkInterface::allInterfaces();
 
-            for (const QNetworkInterface& interface : netInf) {
+            for (const QNetworkInterface& interface : netInf) {                
 
                 const QNetworkInterface::InterfaceFlags flags = interface.flags();
 
@@ -23,13 +23,9 @@ namespace Freetils {
                     continue;
 
                 if (!interface.isValid()) {
-                    qDebug("interface not valid");
+                    qDebug() << "interface not valid " << interface.name();
                     return;
                 }
-
-                 if ("enp3s0f1" == interface.name()) {
-                     continue;
-                 }
 
                  QUdpSocket* socketListener = new QUdpSocket(this);
 
@@ -109,14 +105,7 @@ namespace Freetils {
                 QNetworkDatagram datagram = sender.first->receiveDatagram();
 
                 if (datagram.data().contains(m_FbNt)) {
-
-                    //@todo detect device type (revolution ? mini 4K ? delta ? unsuported ? )
-                    Device device = Device(datagram.senderAddress().toString(), "revolution");
-
-                    if (!m_DevicesList.contains(device)) {
-                        m_DevicesList.append(device);
-                        emit scanned(QVariant(device.getIp()));
-                    }
+                    emit newDeviceDetected(datagram.senderAddress().toString());
                 }
             }
         }
