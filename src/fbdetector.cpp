@@ -6,12 +6,55 @@ namespace Freetils {
 
     }
 
+    void FbDetector::scanAndroid()
+    {
+        qDebug() << "scanAndroid";
+
+        m_ADB = new QProcess();
+
+        connect(m_ADB, &QProcess::errorOccurred, this, &FbDetector::adbErrorOccured);
+        connect(m_ADB, &QProcess::started, this, &FbDetector::adbStarted);
+        connect(m_ADB, &QProcess::readyReadStandardOutput, this, &FbDetector::adbOutput);
+        connect(m_ADB, &QProcess::readyReadStandardError, this, &FbDetector::adbError);
+
+        QStringList args;
+
+        args << "connect" << "192.168.1.9:5555";
+        m_ADB->start("adb", args);
+        m_ADB->waitForStarted();
+
+        //adb connect 192.168.1.9
+        //adb shell
+        //pm clear fr.freebox.qmllauncher
+        //am start -a "android.intent.action.VIEW" -d "vodservice://6play"
+    }
+
+    void FbDetector::adbErrorOccured(QProcess::ProcessError error)
+    {
+        qDebug() << "ADB ERROR " << error;
+    }
+
+    void FbDetector::adbError()
+    {
+        qDebug() << "ADB adbError " << m_ADB->readAllStandardError();
+    }
+
+    void FbDetector::adbStarted()
+    {
+        qDebug() << "ADB STARTED";
+    }
+
+    void FbDetector::adbOutput()
+    {
+        qDebug() << "ADB adbOutput " << m_ADB->readAllStandardOutput();
+    }
+
     void FbDetector::scan()
     {
         if (QNetworkInterface::IsRunning) {
             const QList<QNetworkInterface>netInf = QNetworkInterface::allInterfaces();
 
-            for (const QNetworkInterface& interface : netInf) {                
+            for (const QNetworkInterface& interface : netInf) {
 
                 const QNetworkInterface::InterfaceFlags flags = interface.flags();
 
@@ -103,7 +146,6 @@ namespace Freetils {
         for (auto sender : m_SocketSender) {
             while (sender.first->hasPendingDatagrams()) {
                 QNetworkDatagram datagram = sender.first->receiveDatagram();
-
                 if (datagram.data().contains(m_FbNt)) {
                     emit newDeviceDetected(datagram.senderAddress().toString(), datagram.destinationAddress().toString());
                 }

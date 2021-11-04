@@ -16,17 +16,18 @@ namespace Freetils {
     void FreeTilsApp::detectDevices()
     {
         m_FbDetector->scan();
+        //m_FbDetector->scanAndroid();
     }
 
-    void FreeTilsApp::newDeviceDetected(QString deviceAdress, QString hostAddress)
+    void FreeTilsApp::newDeviceDetected(QString deviceAddress, QString hostAddress)
     {
         //@todo detect device type (revolution ? mini 4K ? delta ? unsuported ? )
-        Device device = Device(deviceAdress, hostAddress, Device::STB_TYPES::REVOLUTION);
+        Device device = Device(deviceAddress, hostAddress, Device::STB_TYPES::REVOLUTION);
 
         if (!m_DevicesList.contains(device)) {
             m_DevicesList.append(device);
 
-            emit refreshStbList(deviceAdress);
+            emit refreshStbList(deviceAddress, device.getIcon());
         }
     }
 

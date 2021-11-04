@@ -9,6 +9,8 @@
 #include <QNetworkDatagram>
 #include <QPair>
 #include <QList>
+#include <QProcess>
+
 #include "device.h"
 
 namespace Freetils {
@@ -18,6 +20,7 @@ namespace Freetils {
     public:
         explicit FbDetector(QObject *parent = nullptr);
         void scan();
+        void scanAndroid();
         void senderReceived();
 
     private:
@@ -27,6 +30,13 @@ namespace Freetils {
 
         QList<QPair<QUdpSocket*, const QNetworkInterface*>> m_SocketListener;
         QList<QPair<QUdpSocket*, const QNetworkInterface*>> m_SocketSender;
+
+        QProcess* m_ADB;
+
+        void adbErrorOccured(QProcess::ProcessError error);
+        void adbError();
+        void adbStarted();
+        void adbOutput();
 
     private slots:
         void senderStateChanged(QAbstractSocket::SocketState state);

@@ -19,7 +19,7 @@ namespace Freetils {
         Q_INVOKABLE void stop();
 
     private:
-        void newDeviceDetected(QString deviceAdress, QString hostAddress);
+        void newDeviceDetected(QString deviceAddress, QString hostAddress);
         void serverStatusUpdated(QPair<bool, QString>status);
         void logger(QString log, QString lvl);
         QString cleanRootFolder(QString rootFolder);
@@ -30,7 +30,7 @@ namespace Freetils {
         QList<Device> m_DevicesList;        
 
     signals:
-        void refreshStbList(QString deviceAdress);
+        void refreshStbList(QString deviceAddress, QString iconAddress);
         void serverUpdated(QVariant isDeployed, QVariant status);
         void logged(QString log, QString lvl);
     };

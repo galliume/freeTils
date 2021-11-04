@@ -40,8 +40,8 @@ Window {
 
     Connections {
         target: freeTilsApp
-        function onRefreshStbList(data) {
-            lstIP.append({"ip": data })
+        function onRefreshStbList(deviceAddress, iconAdress) {
+            lstIP.append({"ip": deviceAddress })
         }
     }
 
@@ -82,7 +82,11 @@ Window {
 
     ListModel {
         id: lstIP
-        ListElement { ip: "Select a Freebox" }
+
+        ListElement {
+            ip: "Select a Freebox"
+//            icon: ""
+        }
     }
 
     Row {
@@ -180,6 +184,13 @@ Window {
                 leftPadding: 270
                 anchors.fill: parent
                 model: lstIP
+//                delegate: ItemDelegate {
+//                    Row {
+//                        spacing: 5
+//                        Image { source: icon }
+//                        Text { text: ip }
+//                    }
+//                }
                 currentIndex: settings.selectedBox
             }
         }

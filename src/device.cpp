@@ -10,4 +10,15 @@ namespace Freetils {
     {
         return device.getIp() == m_Ip;
     }
+
+    QString Device::getIcon()
+    {
+        QString icon = "";
+
+        if (getType() == Device::STB_TYPES::REVOLUTION) {
+            icon = "http://" + m_Ip + ":" + QString::number(m_SchemaPort) + "/" + m_IconUrl;
+        }
+
+        return icon;
+    }
 }
