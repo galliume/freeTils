@@ -20,7 +20,8 @@ namespace Freetils {
 
     private:
         void newDeviceDetected(QString deviceAddress, QString hostAddress);
-        void serverStatusUpdated(QPair<bool, QString>status);
+        void serverDeployed(QPair<bool, QString>status);
+        void serverStopped(QPair<bool, QString>status);
         void logger(QString log, QString lvl);
         QString cleanRootFolder(QString rootFolder);
 

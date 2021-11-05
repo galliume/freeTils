@@ -87,12 +87,14 @@ namespace Freetils {
 
             if (!jsonDoc["error"].isUndefined()) {
                 emit logged(jsonDoc["error"]["message"].toString(), "err");
-                this->stop();
 
                 QPair<bool, QString>status;
                 status.first = false;
                 status.second = "STB is not ready, try again";
                 emit deployed(status);
+
+                this->stop();
+
                 return;
             }
 
@@ -203,6 +205,7 @@ namespace Freetils {
 
         emit serverQuit();
         workerThread.quit();
+        emit logged("Bye.", "info");
     }
 
     void FbDeployer::resultReady(QPair<bool, QString>status)

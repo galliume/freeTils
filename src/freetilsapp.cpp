@@ -8,8 +8,8 @@ namespace Freetils {
         connect(m_FbDetector, &FbDetector::newDeviceDetected, this, &FreeTilsApp::newDeviceDetected);
 
         m_FbDeployer = new FbDeployer();
-        connect(m_FbDeployer, &FbDeployer::deployed, this, &FreeTilsApp::serverStatusUpdated);
-        connect(m_FbDeployer, &FbDeployer::stopped, this, &FreeTilsApp::serverStatusUpdated);
+        connect(m_FbDeployer, &FbDeployer::deployed, this, &FreeTilsApp::serverDeployed);
+        connect(m_FbDeployer, &FbDeployer::stopped, this, &FreeTilsApp::serverStopped);
         connect(m_FbDeployer, &FbDeployer::logged, this, &FreeTilsApp::logger);
     }
 
@@ -33,19 +33,24 @@ namespace Freetils {
 
     void FreeTilsApp::deployApp(QString rootFolder, int index)
     {
-        --index;
+        --index;//gap of one with the fbx list because of "Select Freebox" at index 0
         Device device = m_DevicesList.at(index);
         rootFolder = cleanRootFolder(rootFolder);
 
         m_FbDeployer->serve(rootFolder, device.getIp(), device.getHostIp());
     }
 
-    void FreeTilsApp::serverStatusUpdated(QPair<bool, QString>status)
+    void FreeTilsApp::serverDeployed(QPair<bool, QString>status)
     {
         if (status.first) {
             m_FbDeployer->deploy();
         }
 
+        emit serverUpdated(status.first, status.second);
+    }
+
+    void FreeTilsApp::serverStopped(QPair<bool, QString>status)
+    {
         emit serverUpdated(status.first, status.second);
     }
 
