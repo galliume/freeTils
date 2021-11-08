@@ -1,20 +1,25 @@
 # FreeTils
 ## Utils to ease development with Free's STB.
 
-## This tool will be able to :
+## This tool is already able to do :
 - auto detect stb on network
-- deploy qml app on stb
+- deploy qml app on stb (revolution & delta)
+- show logs
+
+## This tool will be able to :
 - launch app with qmlscene
-- show and filter logs
+- filter logs
 - control app with virtual remote on keyboard
 - maybe hot reload
 
-## STB who will be supported :
+## STB already supported :
 - [x] revolution
-- [ ] delta
+- [x] delta
+
+## STB who will be supported :
 - [ ] mini 4K
 
-## OS who will be supported :
+## OS supported :
 - [x] linux
 - [x] windows
 - [x] mac
