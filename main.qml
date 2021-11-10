@@ -229,7 +229,7 @@ Window {
                 width: parent.width - 120
                 height: parent.height
                 onClicked: {
-                    //fbDeploy.launch(selectedRootProject.text);
+                    freeTilsApp.launchQmlScene(selectedRootProject.text);
                 }
             }
 

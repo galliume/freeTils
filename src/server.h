@@ -22,7 +22,9 @@ namespace Freetils {
 
     public slots:
         void start();
+        void startQML();
         void quit();
+        void quitQML();
 
         // QTcpServer interface
     protected:
@@ -35,9 +37,13 @@ namespace Freetils {
         quint16 m_Port;
         QString m_HostIp;
         QProcess* m_Php;
+        QProcess* m_QmlScene;
         QHostAddress* m_Address;
+
     private:
         void phpStateChanged();
+        void qmlSceneStateChanged();
+        void qmlErrorOccurred(QProcess::ProcessError error);
     };
 }
 

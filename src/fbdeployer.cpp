@@ -21,15 +21,16 @@ namespace Freetils {
 
         Server* server = new Server(nullptr, rootFolder, m_HostIP, m_LocalPort);
 
-        server->moveToThread(&workerThread);
+        workerThread = new QThread();
+        server->moveToThread(workerThread);
 
-        connect(&workerThread, &QThread::finished, server, &QObject::deleteLater);
+        connect(workerThread, &QThread::finished, server, &QObject::deleteLater);
         connect(this, &FbDeployer::operate, server, &Server::start);
         connect(this, &FbDeployer::serverQuit, server, &Server::quit);
         connect(server, &Server::resultReady, this, &FbDeployer::resultReady);
         connect(server, &Server::resultEnded, this, &FbDeployer::resultEnded);
 
-        workerThread.start();
+        workerThread->start();
 
         emit operate();
     }
@@ -66,9 +67,23 @@ namespace Freetils {
         connect(m_Reply, &QNetworkReply::errorOccurred, this, &FbDeployer::errorOccurred);
     }
 
-    void FbDeployer::launch(QString rootFolder)
+    void FbDeployer::launchQmlScene()
     {
-        qDebug() << "launch rootFolder" << rootFolder;
+        workerThread = new QThread();
+        //@todo rename server and separate php / qml process
+        Server* server = new Server(nullptr, "", m_HostIP, m_LocalPort);
+
+        server->moveToThread(workerThread);
+
+        connect(workerThread, &QThread::finished, server, &QObject::deleteLater);
+        connect(this, &FbDeployer::operateQML, server, &Server::startQML);
+        connect(this, &FbDeployer::serverQuit, server, &Server::quitQML);
+        connect(server, &Server::resultReady, this, &FbDeployer::resultReady);
+        connect(server, &Server::resultEnded, this, &FbDeployer::resultEnded);
+
+        workerThread->start();
+
+        emit operateQML();
     }
 
     void FbDeployer::errorOccurred(QNetworkReply::NetworkError code)
@@ -84,6 +99,8 @@ namespace Freetils {
             QString contents = QString::fromUtf8(reply->readAll()); 
 
             QJsonDocument jsonDoc = QJsonDocument::fromJson(contents.toUtf8());
+
+            qDebug() << jsonDoc;
 
             if (!jsonDoc["error"].isUndefined()) {
                 emit logged(jsonDoc["error"]["message"].toString(), "err");
@@ -204,7 +221,7 @@ namespace Freetils {
         m_Reply = nullptr;
 
         emit serverQuit();
-        workerThread.quit();
+        workerThread->quit();
         emit logged("Bye.", "info");
     }
 

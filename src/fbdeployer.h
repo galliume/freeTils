@@ -20,7 +20,7 @@ namespace Freetils {
     class FbDeployer : public QObject
     {
         Q_OBJECT
-        QThread workerThread;
+        QThread* workerThread;
 
     public:
         explicit FbDeployer(QObject *parent = nullptr);
@@ -33,11 +33,11 @@ namespace Freetils {
         void socketErrDisconnected();
         void socketQmlDisconnected();
         void deploy();
+        void launchQmlScene();
         void log(QByteArray text);
 
         void serve(QString rootFolder, QString fbxIp, QString hostIp);
         Q_INVOKABLE void stop();
-        Q_INVOKABLE void launch(QString rootFolder);
 
     private:
         const quint16 m_LocalPort = 9000;
@@ -62,6 +62,7 @@ namespace Freetils {
 
     signals:
         void operate();
+        void operateQML();
         void serverQuit();
         void deployed(QPair<bool, QString>status);
         void stopped(QPair<bool, QString>status);

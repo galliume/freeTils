@@ -33,6 +33,7 @@ namespace Freetils {
 
     void FreeTilsApp::deployApp(QString rootFolder, int index)
     {
+        m_QmlScene = false;
         --index;//gap of one with the fbx list because of "Select Freebox" at index 0
         Device device = m_DevicesList.at(index);
         rootFolder = cleanRootFolder(rootFolder);
@@ -40,10 +41,24 @@ namespace Freetils {
         m_FbDeployer->serve(rootFolder, device.getIp(), device.getHostIp());
     }
 
+    void FreeTilsApp::launchQmlScene(QString rootFolder)
+    {
+        m_QmlScene = true;
+        rootFolder = cleanRootFolder(rootFolder);
+        m_FbDeployer->serve(rootFolder, "127.0.0.1", "127.0.0.1");
+    }
+
     void FreeTilsApp::serverDeployed(QPair<bool, QString>status)
     {
         if (status.first) {
-            m_FbDeployer->deploy();
+            qDebug() << "status " << status.first << " " << status.second;
+
+            if (!m_QmlScene) {
+                m_FbDeployer->deploy();
+            } else {
+                qDebug() << "launchQmlScene";
+                m_FbDeployer->launchQmlScene();
+            }
         }
 
         emit serverUpdated(status.first, status.second);
