@@ -16,10 +16,8 @@ namespace Freetils {
 
     void Server::start()
     {
-        QPair<bool, QString>status;
-
-        QHostAddress address;
-        address.setAddress(m_HostIp);
+        m_Address = new QHostAddress();
+        m_Address->setAddress(m_HostIp);
 
 //        if (this->listen(address, m_Port)) {
 //            status.first = true;
@@ -32,14 +30,19 @@ namespace Freetils {
 
         m_Php = new QProcess();
         QStringList args;
-        QString addr = address.toString() + ":" + QString::number(m_Port);
+        QString addr = m_Address->toString() + ":" + QString::number(m_Port);
         args << "-S" << addr << "-t" << m_RootFolder;
         m_Php->start("php", args);
         m_Php->waitForStarted();
 
-        status.first = true;
-        status.second = "Server started on " + address.toString() + ":" + QString::number(m_Port);
+        connect(m_Php, &QProcess::finished, this, &Server::phpStateChanged);
+    }
 
+    void Server::phpStateChanged()
+    {
+        QPair<bool, QString>status;
+        status.first = true;
+        status.second = "Server started on " + m_Address->toString() + ":" + QString::number(m_Port);
         emit resultReady(status);
     }
 

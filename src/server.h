@@ -35,6 +35,9 @@ namespace Freetils {
         quint16 m_Port;
         QString m_HostIp;
         QProcess* m_Php;
+        QHostAddress* m_Address;
+    private:
+        void phpStateChanged();
     };
 }
 
