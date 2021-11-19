@@ -49,6 +49,8 @@ namespace Freetils {
 
     void Server::startQML()
     {
+        if (m_IsQmlStarted) return;
+
         qDebug() << "qmlStart";
         m_QmlScene = new QProcess();
 
@@ -59,17 +61,30 @@ namespace Freetils {
         QString addr = "http://127.0.0.1:" + QString::number(m_Port) + "/loader.qml";
         args << "-I" << "/home/gpercepied/Documents/workspace/freeTils/vendor/libfbxqml" << addr;
         qDebug() << "qml scene " << args;
-        m_QmlScene->startCommand("qml -I /home/gpercepied/Documents/workspace/freeTils/vendor/libfbxqml http://127.0.0.1:9000/loader.qml");
+        m_QmlScene->start("qml", args);
+        m_QmlScene->waitForStarted();
+
+        m_IsQmlStarted = true;
     }
 
     void Server::qmlSceneStateChanged()
     {
-        qDebug() << "qml scene started " << m_QmlScene->state();
+        QPair<bool, QString>status;
+        status.first = (m_QmlScene->state() == QProcess::Running) ? true : false;
+        status.second = m_QmlScene->readAllStandardOutput();
+
+        emit(resultEnded(status));
     }
 
     void Server::qmlErrorOccurred(QProcess::ProcessError error)
     {
-        qDebug() << "qml scene error occured " << error;
+        Q_UNUSED(error);
+        QPair<bool, QString>status;
+        status.first = false;
+        status.second = m_QmlScene->readAllStandardError();
+
+        emit(resultEnded(status));
+
         quitQML();
     }
 
