@@ -51,12 +51,9 @@ namespace Freetils {
     void FreeTilsApp::serverDeployed(QPair<bool, QString>status)
     {
         if (status.first) {
-            qDebug() << "status " << status.first << " " << status.second;
-
             if (!m_QmlScene) {
                 m_FbDeployer->deploy();
             } else {
-                qDebug() << "launchQmlScene";
                 m_FbDeployer->launchQmlScene();
             }
         }

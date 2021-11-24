@@ -232,7 +232,6 @@ namespace Freetils {
 
     void FbDeployer::resultEnded(QPair<bool, QString>status)
     {
-        qDebug() << "SERVFER " << status;
         emit stopped(status);
     }
 }

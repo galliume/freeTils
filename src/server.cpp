@@ -11,7 +11,8 @@ namespace Freetils {
 
     Server::~Server()
     {
-        //this->quit();
+        this->quit();
+        this->quitQML();
     }
 
     void Server::start()
@@ -56,22 +57,36 @@ namespace Freetils {
 
         connect(m_QmlScene, &QProcess::finished, this, &Server::qmlSceneStateChanged);
         connect(m_QmlScene, &QProcess::errorOccurred, this, &Server::qmlErrorOccurred);
+        connect(m_QmlScene, &QProcess::readyReadStandardError, this, &Server::readyReadStandardError);
+        connect(m_QmlScene, &QProcess::readyReadStandardOutput, this, &Server::readyReadStandardOutput);
 
         QStringList args;
-        QString addr = "http://127.0.0.1:" + QString::number(m_Port) + "/loader.qml";
+        QString addr = "http://127.0.0.1:" + QString::number(m_Port) + "/main.qml";
         args << "-I" << "/home/gpercepied/Documents/workspace/freeTils/vendor/libfbxqml" << addr;
-        qDebug() << "qml scene " << args;
         m_QmlScene->start("qml", args);
         m_QmlScene->waitForStarted();
+    }
 
-        m_IsQmlStarted = true;
+    void Server::readyReadStandardError()
+    {
+        qDebug() << "Stantard Error : " << m_QmlScene->readAllStandardError();
+    }
+
+    void Server::readyReadStandardOutput()
+    {
+        qDebug() << "Standard Output : " << m_QmlScene->readAllStandardOutput();
     }
 
     void Server::qmlSceneStateChanged()
     {
+        m_IsQmlStarted = (m_QmlScene->state() == QProcess::Running) ? true : false;;
         QPair<bool, QString>status;
-        status.first = (m_QmlScene->state() == QProcess::Running) ? true : false;
+        status.first = m_IsQmlStarted;
         status.second = m_QmlScene->readAllStandardOutput();
+
+        if (!m_IsQmlStarted) {
+            quitQML();
+        }
 
         emit(resultEnded(status));
     }
@@ -83,9 +98,9 @@ namespace Freetils {
         status.first = false;
         status.second = m_QmlScene->readAllStandardError();
 
-        emit(resultEnded(status));
-
         quitQML();
+
+        emit(resultEnded(status));    
     }
 
 
