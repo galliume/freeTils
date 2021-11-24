@@ -34,7 +34,7 @@ namespace Freetils {
         void socketQmlDisconnected();
         void deploy();
         void launchQmlScene();
-        void log(QByteArray text);
+        void log(QByteArray text, QString lvl = "info");
 
         void serve(QString rootFolder, QString fbxIp, QString hostIp);
         Q_INVOKABLE void stop();
@@ -43,6 +43,7 @@ namespace Freetils {
         const quint16 m_LocalPort = 9000;
         QString m_FbxIP;
         QString m_HostIP;
+        QString m_RootFolder;
         QNetworkAccessManager* m_Qnam;
         QNetworkReply* m_Reply;
 

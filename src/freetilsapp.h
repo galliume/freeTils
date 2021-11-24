@@ -31,6 +31,7 @@ namespace Freetils {
         FbDeployer* m_FbDeployer;
         QList<Device> m_DevicesList;
         bool m_QmlScene = false;
+        bool m_QmlSceneRunning = false;
 
     signals:
         void refreshStbList(QString deviceAddress, QString iconAddress);

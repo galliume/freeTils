@@ -11,8 +11,8 @@ namespace Freetils {
 
     Server::~Server()
     {
-        this->quit();
-        this->quitQML();
+        //this->quit();
+        //this->quitQML();
     }
 
     void Server::start()
@@ -36,7 +36,11 @@ namespace Freetils {
         QStringList args;
         QString addr = m_Address->toString() + ":" + QString::number(m_Port);
         args << "-S" << addr << "-t" << m_RootFolder;
-        m_Php->start("php", args);
+
+        m_Php->setProgram("php");
+        m_Php->setArguments(args);
+        m_Php->start();
+
         m_Php->waitForStarted();
     }
 
@@ -50,10 +54,9 @@ namespace Freetils {
 
     void Server::startQML()
     {
-        if (m_IsQmlStarted) return;
-
         qDebug() << "qmlStart";
         m_QmlScene = new QProcess();
+        m_QmlScene->setProcessChannelMode(QProcess::MergedChannels);
 
         connect(m_QmlScene, &QProcess::finished, this, &Server::qmlSceneStateChanged);
         connect(m_QmlScene, &QProcess::errorOccurred, this, &Server::qmlErrorOccurred);
@@ -61,20 +64,26 @@ namespace Freetils {
         connect(m_QmlScene, &QProcess::readyReadStandardOutput, this, &Server::readyReadStandardOutput);
 
         QStringList args;
+        //@todo make it configurable
+        QString libfbxqml = m_RootFolder + "/vendor/libfbxqml";
+        qDebug() << "libfbxqml " << libfbxqml;
         QString addr = "http://127.0.0.1:" + QString::number(m_Port) + "/main.qml";
-        args << "-I" << "/home/gpercepied/Documents/workspace/freeTils/vendor/libfbxqml" << addr;
-        m_QmlScene->start("qml", args);
+        args << "-I" << libfbxqml << addr;
+
+        m_QmlScene->setProgram("qml");
+        m_QmlScene->setArguments(args);
+        m_QmlScene->start();
         m_QmlScene->waitForStarted();
     }
 
     void Server::readyReadStandardError()
     {
-        qDebug() << "Stantard Error : " << m_QmlScene->readAllStandardError();
+        emit qmlLog(m_QmlScene->readAllStandardError(), "err");
     }
 
     void Server::readyReadStandardOutput()
     {
-        qDebug() << "Standard Output : " << m_QmlScene->readAllStandardOutput();
+        emit qmlLog(m_QmlScene->readAllStandardOutput(), "info");
     }
 
     void Server::qmlSceneStateChanged()
@@ -82,13 +91,13 @@ namespace Freetils {
         m_IsQmlStarted = (m_QmlScene->state() == QProcess::Running) ? true : false;;
         QPair<bool, QString>status;
         status.first = m_IsQmlStarted;
-        status.second = m_QmlScene->readAllStandardOutput();
+        status.second = "";
 
         if (!m_IsQmlStarted) {
             quitQML();
         }
 
-        emit(resultEnded(status));
+        emit resultEnded(status);
     }
 
     void Server::qmlErrorOccurred(QProcess::ProcessError error)
@@ -100,7 +109,7 @@ namespace Freetils {
 
         quitQML();
 
-        emit(resultEnded(status));    
+        emit resultEnded(status);
     }
 
 
@@ -119,14 +128,18 @@ namespace Freetils {
             status.second = "Server stoped";
         }
 
-        emit(resultEnded(status));
+        emit resultEnded(status);
     }
 
     void Server::quitQML()
     {
         qDebug() << "quitQML";
-        m_QmlScene->close();
+
+        m_QmlScene->terminate();
+        m_QmlScene->deleteLater();
+
         this->close();
+        m_QmlScene = nullptr;
 
         QPair<bool, QString>status;
 
@@ -138,7 +151,7 @@ namespace Freetils {
             status.second = "Server stoped";
         }
 
-        emit(resultEnded(status));
+        emit resultEnded(status);
     }
 
 //    void Server::incomingConnection(qintptr handle)

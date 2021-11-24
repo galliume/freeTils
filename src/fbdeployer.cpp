@@ -18,8 +18,9 @@ namespace Freetils {
         m_Reply = nullptr;
         m_FbxIP = fbxIp;        
         m_HostIP = hostIp;
+        m_RootFolder = rootFolder;
 
-        Server* server = new Server(nullptr, rootFolder, m_HostIP, m_LocalPort);
+        Server* server = new Server(nullptr, m_RootFolder, m_HostIP, m_LocalPort);
 
         workerThread = new QThread();
         server->moveToThread(workerThread);
@@ -71,7 +72,7 @@ namespace Freetils {
     {
         workerThread = new QThread();
         //@todo rename server and separate php / qml process
-        Server* server = new Server(nullptr, "", m_HostIP, m_LocalPort);
+        Server* server = new Server(nullptr, m_RootFolder, m_HostIP, m_LocalPort);
 
         server->moveToThread(workerThread);
 
@@ -80,6 +81,7 @@ namespace Freetils {
         connect(this, &FbDeployer::serverQuit, server, &Server::quitQML);
         connect(server, &Server::resultReady, this, &FbDeployer::resultReady);
         connect(server, &Server::resultEnded, this, &FbDeployer::resultEnded);
+        connect(server, &Server::qmlLog, this, &FbDeployer::log);
 
         workerThread->start();
 
@@ -149,7 +151,7 @@ namespace Freetils {
         }        
     }
 
-    void FbDeployer::log(QByteArray text)
+    void FbDeployer::log(QByteArray text, QString lvl)
     {
         //@todo real ansi code parsing ?
         QRegularExpression regex("(?:\\\x1B\\[0m)(.+)(?:\\\x1B\\[0m)");
@@ -169,13 +171,13 @@ namespace Freetils {
                  }
             }
 
-            QString lvl = "info";
-
             if (text.contains("1;33m")) {
                 lvl = "err";
             }
 
             emit logged(matched, lvl);
+        } else {
+            emit logged(text, lvl);
         }
     }
 

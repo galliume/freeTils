@@ -24,7 +24,7 @@ namespace Freetils {
         //@todo detect device type (revolution ? mini 4K ? delta ? unsuported ? )
         Device device = Device(deviceAddress, hostAddress, Device::STB_TYPES::REVOLUTION);
 
-        if (!m_DevicesList.contains(device)) {
+        if (!m_DevicesList.contains(device) && !device.getIp().endsWith(".254")) {
             m_DevicesList.append(device);
 
             emit refreshStbList(deviceAddress, device.getIcon());
@@ -54,7 +54,10 @@ namespace Freetils {
             if (!m_QmlScene) {
                 m_FbDeployer->deploy();
             } else {
-                m_FbDeployer->launchQmlScene();
+                if (!m_QmlSceneRunning) {
+                    m_FbDeployer->launchQmlScene();
+                    m_QmlSceneRunning = true;
+                }
             }
         }
 
@@ -63,6 +66,7 @@ namespace Freetils {
 
     void FreeTilsApp::serverStopped(QPair<bool, QString>status)
     {
+        m_QmlSceneRunning = false;
         emit serverUpdated(status.first, status.second);
     }
 
