@@ -27,7 +27,7 @@ namespace Freetils {
 
         connect(m_WorkerThread, &QThread::finished, server, &QObject::deleteLater);
         connect(this, &FbDeployer::operate, server, &Server::start);
-        connect(this, &FbDeployer::serverQuit, server, &Server::quit);
+        connect(this, &FbDeployer::phpQuit, server, &Server::phpQuit);
         connect(server, &Server::resultReady, this, &FbDeployer::resultReady);
         connect(server, &Server::resultEnded, this, &FbDeployer::resultEnded);
 
@@ -70,20 +70,20 @@ namespace Freetils {
 
     void FbDeployer::launchQmlScene()
     {
-        m_WorkerThread = new QThread();
+        m_QmlWorkerThread = new QThread();
         //@todo rename server and separate php / qml process
         Server* server = new Server(nullptr, m_RootFolder, m_HostIP, m_LocalPort);
 
-        server->moveToThread(m_WorkerThread);
+        server->moveToThread(m_QmlWorkerThread);
 
-        connect(m_WorkerThread, &QThread::finished, server, &QObject::deleteLater);
+        connect(m_QmlWorkerThread, &QThread::finished, server, &QObject::deleteLater);
         connect(this, &FbDeployer::operateQML, server, &Server::startQML);
-        connect(this, &FbDeployer::serverQuit, server, &Server::quitQML);
+        connect(this, &FbDeployer::qmlQuit, server, &Server::qmlQuit);
         connect(server, &Server::resultReady, this, &FbDeployer::resultReady);
         connect(server, &Server::resultEnded, this, &FbDeployer::resultEnded);
         connect(server, &Server::qmlLog, this, &FbDeployer::log);
 
-        m_WorkerThread->start();
+        m_QmlWorkerThread->start();
 
         emit operateQML();
     }
@@ -216,13 +216,23 @@ namespace Freetils {
 
     void FbDeployer::stop()
     {
-        m_Qml->close();
-        m_Err->close();
-        m_Out->close();
+        if (nullptr != m_Qml) {
+            m_Qml->close();
+        }
+
+        if (nullptr != m_Err) {
+            m_Err->close();
+        }
+
+        if (nullptr != m_Out) {
+            m_Out->close();
+        }
 
         m_Reply = nullptr;
 
-        emit serverQuit();
+        emit phpQuit();
+        emit qmlQuit();
+
         emit logged("Bye.", "info");
     }
 
@@ -239,6 +249,14 @@ namespace Freetils {
                 m_WorkerThread->terminate();
             }
         }
+
+        if (m_QmlWorkerThread->isRunning()) {
+            m_QmlWorkerThread->quit();
+            if (!m_QmlWorkerThread->wait(3000)) {
+                m_QmlWorkerThread->terminate();
+            }
+        }
+
         emit stopped(status);
     }
 }

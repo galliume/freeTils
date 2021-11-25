@@ -51,11 +51,12 @@ namespace Freetils {
         QHostAddress m_Address;
         QRemoteObjectNode m_RemoteNode;
         QTcpServer* m_TcpServer;
-        QTcpSocket* m_Out;
-        QTcpSocket* m_Err;
-        QTcpSocket* m_Qml;
+        QTcpSocket* m_Out = nullptr;
+        QTcpSocket* m_Err = nullptr;
+        QTcpSocket* m_Qml = nullptr;
 
         QThread* m_WorkerThread = nullptr;
+        QThread* m_QmlWorkerThread = nullptr;
 
     public slots:
         void resultReady(QPair<bool, QString>status);
@@ -65,10 +66,11 @@ namespace Freetils {
 
     signals:
         void operate();
-        void operateQML();
-        void serverQuit();
+        void phpQuit();
         void deployed(QPair<bool, QString>status);
         void stopped(QPair<bool, QString>status);
+        void operateQML();
+        void qmlQuit();
         void logged(QString log, QString lvl);
     };
 }
