@@ -50,11 +50,8 @@ Window {
         function onServerUpdated(isOk, status) {
             deployStatus.color = (isOk) ? "green" : "red";
             deployStatus.text = status;
-
-            if (!isOk) {
-                deployBtn.visible = true;
-                stopBtn.visible = false;
-            }
+            deployBtn.visible = (isOk) ? false : true;
+            stopBtn.visible = (isOk) ? true : false;
         }
     }
 
@@ -168,7 +165,6 @@ Window {
                 width: parent.width
                 height: parent.height
                 onClicked: {
-
                     freeTilsApp.detectDevices();
                 }
             }
@@ -243,8 +239,6 @@ Window {
                     if (0 !== lstFbx.currentIndex) {
                         settings.selectedBox = lstFbx.currentIndex;
                         freeTilsApp.deployApp(selectedRootProject.text, lstFbx.currentIndex);
-                        deployBtn.visible = false;
-                        stopBtn.visible = true;
                     } else {
                         deployStatus.text = "Please select a Freebox";
                         deployStatus.color = "red";

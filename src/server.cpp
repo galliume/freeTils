@@ -54,7 +54,6 @@ namespace Freetils {
 
     void Server::startQML()
     {
-        qDebug() << "qmlStart";
         m_QmlScene = new QProcess();
         m_QmlScene->setProcessChannelMode(QProcess::MergedChannels);
 
@@ -66,7 +65,6 @@ namespace Freetils {
         QStringList args;
         //@todo make it configurable
         QString libfbxqml = m_RootFolder + "/vendor/libfbxqml";
-        qDebug() << "libfbxqml " << libfbxqml;
         QString addr = "http://127.0.0.1:" + QString::number(m_Port) + "/main.qml";
         args << "-I" << libfbxqml << addr;
 
@@ -88,10 +86,10 @@ namespace Freetils {
 
     void Server::qmlSceneStateChanged()
     {
-        m_IsQmlStarted = (m_QmlScene->state() == QProcess::Running) ? true : false;;
+        m_IsQmlStarted = (m_QmlScene->state() == QProcess::Running) ? true : false;
         QPair<bool, QString>status;
         status.first = m_IsQmlStarted;
-        status.second = "";
+        status.second = m_QmlScene->readAllStandardError();
 
         if (!m_IsQmlStarted) {
             quitQML();
@@ -117,6 +115,7 @@ namespace Freetils {
     {
         m_Php->close();
         this->close();
+        m_Php = nullptr;
 
         QPair<bool, QString>status;
 
@@ -133,10 +132,8 @@ namespace Freetils {
 
     void Server::quitQML()
     {
-        qDebug() << "quitQML";
-
         m_QmlScene->terminate();
-        m_QmlScene->deleteLater();
+        m_QmlScene->kill();
 
         this->close();
         m_QmlScene = nullptr;

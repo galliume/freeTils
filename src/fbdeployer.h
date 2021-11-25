@@ -55,6 +55,8 @@ namespace Freetils {
         QTcpSocket* m_Err;
         QTcpSocket* m_Qml;
 
+        QThread* m_WorkerThread = nullptr;
+
     public slots:
         void resultReady(QPair<bool, QString>status);
         void resultEnded(QPair<bool, QString>status);
