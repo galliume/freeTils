@@ -330,6 +330,8 @@ Window {
                 id: logs
                 textFormat: Text.RichText
                 readOnly: true
+                selectByMouse: true
+                selectByKeyboard: true
             }
         }
     }
