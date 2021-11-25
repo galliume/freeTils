@@ -332,6 +332,7 @@ Window {
                 readOnly: true
                 selectByMouse: true
                 selectByKeyboard: true
+                wrapMode: TextEdit.Wrap
             }
         }
     }
