@@ -19,10 +19,13 @@ namespace Freetils {
     signals:
         void resultReady(QPair<bool, QString>status);
         void resultEnded(QPair<bool, QString>status);
+        void qmlLog(QByteArray text, QString lvl);
 
     public slots:
         void start();
+        void startQML();
         void quit();
+        void quitQML();
 
         // QTcpServer interface
     protected:
@@ -35,9 +38,16 @@ namespace Freetils {
         quint16 m_Port;
         QString m_HostIp;
         QProcess* m_Php;
+        QProcess* m_QmlScene;
         QHostAddress* m_Address;
+        bool m_IsQmlStarted = false;
+
     private:
         void phpStateChanged();
+        void qmlSceneStateChanged();
+        void qmlErrorOccurred(QProcess::ProcessError error);
+        void readyReadStandardOutput();
+        void readyReadStandardError();
     };
 }
 

@@ -16,6 +16,7 @@ namespace Freetils {
 
         Q_INVOKABLE void detectDevices();
         Q_INVOKABLE void deployApp(QString rootFolder, int currentIndex);
+        Q_INVOKABLE void launchQmlScene(QString rootFolder);
         Q_INVOKABLE void stop();
 
     private:
@@ -28,7 +29,9 @@ namespace Freetils {
     private:
         FbDetector* m_FbDetector;
         FbDeployer* m_FbDeployer;
-        QList<Device> m_DevicesList;        
+        QList<Device> m_DevicesList;
+        bool m_QmlScene = false;
+        bool m_QmlSceneRunning = false;
 
     signals:
         void refreshStbList(QString deviceAddress, QString iconAddress);

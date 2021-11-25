@@ -18,18 +18,20 @@ namespace Freetils {
         m_Reply = nullptr;
         m_FbxIP = fbxIp;        
         m_HostIP = hostIp;
+        m_RootFolder = rootFolder;
 
-        Server* server = new Server(nullptr, rootFolder, m_HostIP, m_LocalPort);
+        Server* server = new Server(nullptr, m_RootFolder, m_HostIP, m_LocalPort);
 
-        server->moveToThread(&workerThread);
+        m_WorkerThread = new QThread();
+        server->moveToThread(m_WorkerThread);
 
-        connect(&workerThread, &QThread::finished, server, &QObject::deleteLater);
+        connect(m_WorkerThread, &QThread::finished, server, &QObject::deleteLater);
         connect(this, &FbDeployer::operate, server, &Server::start);
         connect(this, &FbDeployer::serverQuit, server, &Server::quit);
         connect(server, &Server::resultReady, this, &FbDeployer::resultReady);
         connect(server, &Server::resultEnded, this, &FbDeployer::resultEnded);
 
-        workerThread.start();
+        m_WorkerThread->start();
 
         emit operate();
     }
@@ -66,9 +68,24 @@ namespace Freetils {
         connect(m_Reply, &QNetworkReply::errorOccurred, this, &FbDeployer::errorOccurred);
     }
 
-    void FbDeployer::launch(QString rootFolder)
+    void FbDeployer::launchQmlScene()
     {
-        qDebug() << "launch rootFolder" << rootFolder;
+        m_WorkerThread = new QThread();
+        //@todo rename server and separate php / qml process
+        Server* server = new Server(nullptr, m_RootFolder, m_HostIP, m_LocalPort);
+
+        server->moveToThread(m_WorkerThread);
+
+        connect(m_WorkerThread, &QThread::finished, server, &QObject::deleteLater);
+        connect(this, &FbDeployer::operateQML, server, &Server::startQML);
+        connect(this, &FbDeployer::serverQuit, server, &Server::quitQML);
+        connect(server, &Server::resultReady, this, &FbDeployer::resultReady);
+        connect(server, &Server::resultEnded, this, &FbDeployer::resultEnded);
+        connect(server, &Server::qmlLog, this, &FbDeployer::log);
+
+        m_WorkerThread->start();
+
+        emit operateQML();
     }
 
     void FbDeployer::errorOccurred(QNetworkReply::NetworkError code)
@@ -84,6 +101,8 @@ namespace Freetils {
             QString contents = QString::fromUtf8(reply->readAll()); 
 
             QJsonDocument jsonDoc = QJsonDocument::fromJson(contents.toUtf8());
+
+            qDebug() << jsonDoc;
 
             if (!jsonDoc["error"].isUndefined()) {
                 emit logged(jsonDoc["error"]["message"].toString(), "err");
@@ -132,7 +151,7 @@ namespace Freetils {
         }        
     }
 
-    void FbDeployer::log(QByteArray text)
+    void FbDeployer::log(QByteArray text, QString lvl)
     {
         //@todo real ansi code parsing ?
         QRegularExpression regex("(?:\\\x1B\\[0m)(.+)(?:\\\x1B\\[0m)");
@@ -152,13 +171,13 @@ namespace Freetils {
                  }
             }
 
-            QString lvl = "info";
-
             if (text.contains("1;33m")) {
                 lvl = "err";
             }
 
             emit logged(matched, lvl);
+        } else {
+            emit logged(text, lvl);
         }
     }
 
@@ -204,7 +223,6 @@ namespace Freetils {
         m_Reply = nullptr;
 
         emit serverQuit();
-        workerThread.quit();
         emit logged("Bye.", "info");
     }
 
@@ -215,6 +233,12 @@ namespace Freetils {
 
     void FbDeployer::resultEnded(QPair<bool, QString>status)
     {
+        if (m_WorkerThread->isRunning()) {
+            m_WorkerThread->quit();
+            if (!m_WorkerThread->wait(3000)) {
+                m_WorkerThread->terminate();
+            }
+        }
         emit stopped(status);
     }
 }
