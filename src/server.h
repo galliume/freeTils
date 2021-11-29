@@ -22,9 +22,9 @@ namespace Freetils {
         void qmlLog(QByteArray text, QString lvl);
 
     public slots:
-        void start();
+        void phpStart();
         void phpQuit();
-        void startQML();
+        void qmlStart();
         void qmlQuit();
 
         // QTcpServer interface
@@ -37,9 +37,9 @@ namespace Freetils {
         QString m_RootFolder;
         quint16 m_Port;
         QString m_HostIp;
-        QProcess* m_Php;
-        QProcess* m_QmlScene;
-        QHostAddress* m_Address;
+        QProcess* m_Php = nullptr;
+        QProcess* m_QmlScene = nullptr;
+        QHostAddress* m_Address = nullptr;
         bool m_IsQmlStarted = false;
 
     private:

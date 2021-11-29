@@ -30,7 +30,7 @@ namespace Freetils {
     private:
         QString m_RootFolder;
         qintptr handle;
-        QTcpSocket* m_Socket;
+        QTcpSocket* m_Socket = nullptr;
     };
 }
 

@@ -10,10 +10,11 @@ namespace Freetils {
 
     Server::~Server()
     {
-
+        qmlQuit();
+        phpQuit();
     }
 
-    void Server::start()
+    void Server::phpStart()
     {
         m_Address = new QHostAddress();
         m_Address->setAddress(m_HostIp);
@@ -66,8 +67,11 @@ namespace Freetils {
 
     void Server::phpQuit()
     {
-        m_Php->close();
-        //this->close();
+        if (nullptr != m_Php) {
+            m_Php->close();
+
+        }
+        this->close();
 
         QPair<bool, QString>status;
 
@@ -82,7 +86,7 @@ namespace Freetils {
         emit resultEnded(status);
     }
 
-    void Server::startQML()
+    void Server::qmlStart()
     {
         m_QmlScene = new QProcess();
         m_QmlScene->setProcessChannelMode(QProcess::MergedChannels);
@@ -137,7 +141,9 @@ namespace Freetils {
     void Server::qmlQuit()
     {
         qDebug() << "QUIT QML";
-        m_QmlScene->close();
-        //emit phpQuit();
+
+        if (nullptr != m_QmlScene) {
+            m_QmlScene->close();
+        }
     }
 }

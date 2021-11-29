@@ -44,13 +44,13 @@ namespace Freetils {
         QString m_FbxIP;
         QString m_HostIP;
         QString m_RootFolder;
-        QNetworkAccessManager* m_Qnam;
-        QNetworkReply* m_Reply;
+        QNetworkAccessManager* m_Qnam = nullptr;
+        QNetworkReply* m_Reply = nullptr;
 
         QNetworkInterface m_Interface;
         QHostAddress m_Address;
         QRemoteObjectNode m_RemoteNode;
-        QTcpServer* m_TcpServer;
+        QTcpServer* m_TcpServer = nullptr;
         QTcpSocket* m_Out = nullptr;
         QTcpSocket* m_Err = nullptr;
         QTcpSocket* m_Qml = nullptr;

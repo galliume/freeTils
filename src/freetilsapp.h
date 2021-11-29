@@ -27,8 +27,8 @@ namespace Freetils {
         QString cleanRootFolder(QString rootFolder);
 
     private:
-        FbDetector* m_FbDetector;
-        FbDeployer* m_FbDeployer;
+        FbDetector* m_FbDetector = nullptr;
+        FbDeployer* m_FbDeployer = nullptr;
         QList<Device> m_DevicesList;
         bool m_QmlScene = false;
         bool m_QmlSceneRunning = false;

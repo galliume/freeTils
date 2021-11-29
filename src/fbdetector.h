@@ -31,7 +31,7 @@ namespace Freetils {
         QList<QPair<QUdpSocket*, const QNetworkInterface*>> m_SocketListener;
         QList<QPair<QUdpSocket*, const QNetworkInterface*>> m_SocketSender;
 
-        QProcess* m_ADB;
+        QProcess* m_ADB = nullptr;
 
         void adbErrorOccured(QProcess::ProcessError error);
         void adbError();

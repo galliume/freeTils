@@ -26,7 +26,7 @@ namespace Freetils {
         server->moveToThread(m_WorkerThread);
 
         connect(m_WorkerThread, &QThread::finished, server, &QObject::deleteLater);
-        connect(this, &FbDeployer::operate, server, &Server::start);
+        connect(this, &FbDeployer::operate, server, &Server::phpStart);
         connect(this, &FbDeployer::phpQuit, server, &Server::phpQuit);
         connect(server, &Server::resultReady, this, &FbDeployer::resultReady);
         connect(server, &Server::resultEnded, this, &FbDeployer::resultEnded);
@@ -77,7 +77,7 @@ namespace Freetils {
         server->moveToThread(m_QmlWorkerThread);
 
         connect(m_QmlWorkerThread, &QThread::finished, server, &QObject::deleteLater);
-        connect(this, &FbDeployer::operateQML, server, &Server::startQML);
+        connect(this, &FbDeployer::operateQML, server, &Server::qmlStart);
         connect(this, &FbDeployer::qmlQuit, server, &Server::qmlQuit);
         connect(server, &Server::resultReady, this, &FbDeployer::resultReady);
         connect(server, &Server::resultEnded, this, &FbDeployer::resultEnded);
