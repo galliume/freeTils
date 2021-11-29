@@ -43,11 +43,10 @@ namespace Freetils {
         bool m_IsQmlStarted = false;
 
     private:
-        void phpStateChanged();
+        void phpStarted();
         void phpReadyReadStandardOutput();
         void phpReadyReadStandardError();
         void phpErrorOccurred(QProcess::ProcessError error);
-        void qmlSceneStateChanged();
         void qmlErrorOccurred(QProcess::ProcessError error);        
         void qmlReadyReadStandardOutput();
         void qmlReadyReadStandardError();

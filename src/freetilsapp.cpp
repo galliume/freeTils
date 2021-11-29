@@ -56,9 +56,11 @@ namespace Freetils {
     {
         if (status.first) {
             if (!m_QmlScene) {
-                m_FbDeployer->deploy();
-
-                emit serverUpdated(status.first, status.second);
+                if (!m_DeployedToStb) {
+                    m_DeployedToStb = true;
+                    m_FbDeployer->deploy();
+                    emit serverUpdated(status.first, status.second);
+                }
             } else {
                 if (!m_QmlSceneRunning) {
                     m_FbDeployer->launchQmlScene();
@@ -71,6 +73,7 @@ namespace Freetils {
     void FreeTilsApp::serverStopped(QPair<bool, QString>status)
     {
         m_QmlSceneRunning = false;
+        m_DeployedToStb = false;
         emit serverUpdated(status.first, status.second);
     }
 

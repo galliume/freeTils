@@ -10,7 +10,7 @@ namespace Freetils {
 
     FbDeployer::~FbDeployer()
     {
-
+        stop();
     }
 
     void FbDeployer::serve(QString rootFolder, QString fbxIp, QString hostIp)

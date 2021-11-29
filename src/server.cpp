@@ -10,8 +10,7 @@ namespace Freetils {
 
     Server::~Server()
     {
-        qmlQuit();
-        phpQuit();
+
     }
 
     void Server::phpStart()
@@ -22,7 +21,7 @@ namespace Freetils {
         m_Php = new QProcess();
         m_Php->setProcessChannelMode(QProcess::MergedChannels);
 
-        connect(m_Php, &QProcess::finished, this, &Server::phpStateChanged);
+        connect(m_Php, &QProcess::started, this, &Server::phpStarted);
         connect(m_Php, &QProcess::errorOccurred, this, &Server::phpErrorOccurred);
         connect(m_Php, &QProcess::readyReadStandardError, this, &Server::phpReadyReadStandardError);
         connect(m_Php, &QProcess::readyReadStandardOutput, this, &Server::phpReadyReadStandardOutput);
@@ -37,7 +36,7 @@ namespace Freetils {
         m_Php->waitForStarted();
     }
 
-    void Server::phpStateChanged()
+    void Server::phpStarted()
     {
         QPair<bool, QString>status;
         status.first = true;
@@ -68,9 +67,12 @@ namespace Freetils {
     void Server::phpQuit()
     {
         if (nullptr != m_Php) {
-            m_Php->close();
-
+            m_Php->terminate();
+            if (!m_Php->waitForFinished()) {
+                m_Php->kill();
+            }
         }
+
         this->close();
 
         QPair<bool, QString>status;
@@ -79,7 +81,7 @@ namespace Freetils {
             status.first = false;
             status.second = "Error still listening";
         } else {
-            status.first = true;
+            status.first = false;
             status.second = "Server stoped";
         }
 
@@ -108,16 +110,6 @@ namespace Freetils {
         m_QmlScene->waitForStarted();
     }
 
-    void Server::qmlSceneStateChanged()
-    {
-        m_IsQmlStarted = (m_QmlScene->state() == QProcess::Running) ? true : false;
-        QPair<bool, QString>status;
-        status.first = m_IsQmlStarted;
-        status.second = m_QmlScene->readAllStandardError();
-
-        emit resultEnded(status);
-    }
-
     void Server::qmlReadyReadStandardError()
     {
         emit qmlLog(m_QmlScene->readAllStandardError(), "err");
@@ -140,10 +132,13 @@ namespace Freetils {
 
     void Server::qmlQuit()
     {
-        qDebug() << "QUIT QML";
-
-        if (nullptr != m_QmlScene) {
-            m_QmlScene->close();
+         if (nullptr != m_QmlScene) {
+            m_QmlScene->terminate();
+            if (!m_QmlScene->waitForFinished(3000)) {
+                m_QmlScene->kill();
+            }
         }
+
+        phpQuit();
     }
 }

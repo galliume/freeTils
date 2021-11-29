@@ -32,6 +32,7 @@ namespace Freetils {
         QList<Device> m_DevicesList;
         bool m_QmlScene = false;
         bool m_QmlSceneRunning = false;
+        bool m_DeployedToStb = false;
 
     signals:
         void refreshStbList(QString deviceAddress, QString iconAddress);

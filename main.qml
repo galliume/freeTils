@@ -48,6 +48,7 @@ Window {
     Connections {
         target: freeTilsApp
         function onServerUpdated(isOk, status) {
+            //@todo to rework
             deployStatus.color = (isOk) ? "green" : "red";
             deployStatus.text = status;
             deployBtn.visible = (isOk) ? false : true;
