@@ -66,8 +66,6 @@ namespace Freetils {
 
     void Server::phpQuit()
     {
-        qDebug() << "QUIT PHP";
-
         m_Php->close();
         //this->close();
 

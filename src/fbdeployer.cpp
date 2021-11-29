@@ -102,8 +102,6 @@ namespace Freetils {
 
             QJsonDocument jsonDoc = QJsonDocument::fromJson(contents.toUtf8());
 
-            qDebug() << jsonDoc;
-
             if (!jsonDoc["error"].isUndefined()) {
                 emit logged(jsonDoc["error"]["message"].toString(), "err");
 
@@ -243,14 +241,14 @@ namespace Freetils {
 
     void FbDeployer::resultEnded(QPair<bool, QString>status)
     {
-        if (m_WorkerThread->isRunning()) {
+        if (nullptr != m_WorkerThread && m_WorkerThread->isRunning()) {
             m_WorkerThread->quit();
             if (!m_WorkerThread->wait(3000)) {
                 m_WorkerThread->terminate();
             }
         }
 
-        if (m_QmlWorkerThread->isRunning()) {
+        if (nullptr != m_QmlWorkerThread && m_QmlWorkerThread->isRunning()) {
             m_QmlWorkerThread->quit();
             if (!m_QmlWorkerThread->wait(3000)) {
                 m_QmlWorkerThread->terminate();
