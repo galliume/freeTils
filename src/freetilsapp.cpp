@@ -33,7 +33,7 @@ namespace Freetils {
 
     void FreeTilsApp::deployApp(QString rootFolder, int index)
     {
-        if (0 <= index && m_DevicesList.size() > index) {
+        if (0 <= index && m_DevicesList.size() >= index) {
             m_QmlScene = false;
             --index;//gap of one with the fbx list because of "Select Freebox" at index 0
             Device device = m_DevicesList.at(index);
