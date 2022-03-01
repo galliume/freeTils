@@ -341,6 +341,7 @@ Window {
                 height: parent.height
                 anchors.left: wsPort.right
                 onClicked: {
+                    settings.miniIP = ipMini4k.text;
                     freeTilsApp.connectADB(ipMini4k.text);
                 }
             }
@@ -352,6 +353,7 @@ Window {
                 height: parent.height
                 anchors.left: connectADB.right
                 onClicked: {
+                    settings.miniID = nameActivity.text;
                     freeTilsApp.startMini(ipMini4k.text, nameActivity.text);
                 }
             }         
@@ -363,6 +365,7 @@ Window {
                 height: parent.height
                 anchors.left: startMini.right
                 onClicked: {
+                    settings.miniWsPort = wsPort.text;
                     freeTilsApp.deployAppMini(ipMini4k.text, wsPort.text);
                 }
             }
