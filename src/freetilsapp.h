@@ -17,7 +17,10 @@ namespace Freetils {
         Q_INVOKABLE void detectDevices();
         Q_INVOKABLE void deployApp(QString rootFolder, int currentIndex);
         Q_INVOKABLE void launchQmlScene(QString rootFolder);
+        Q_INVOKABLE void deployAppMini(QString miniIP);
         Q_INVOKABLE void stop();
+        Q_INVOKABLE void connectADB(QString miniIP);
+        Q_INVOKABLE void startMini(QString miniIP);
 
     private:
         void newDeviceDetected(QString deviceAddress, QString hostAddress);

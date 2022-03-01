@@ -282,7 +282,7 @@ Window {
     }
 
     Row {
-        id: filter
+        id: mini
         spacing: 0
         anchors.top: deployRow.bottom
 
@@ -292,7 +292,7 @@ Window {
             color: root.labelColor
 
             Text {
-                text: "Logs filter"
+                text: "Mini 4K"
                 font.family: root.fontFamily
                 font.pointSize: root.fontPointSize
                 color: "white"
@@ -309,18 +309,52 @@ Window {
             color: root.menuColor
 
             TextInput {
-                id: txtFilter
-                width: parent.width
+                id: txtMini4k
+                text: "192.168.1.9"
+                width: 200
                 height: parent.height
+            }
+
+            Button {
+                id: connectADB
+                text: "Connect ADB"
+                width: 200
+                height: parent.height
+                anchors.left: txtMini4k.right
+                onClicked: {
+                    freeTilsApp.connectADB(txtMini4k.text);
+                }
+            }
+
+            Button {
+                id: startMini
+                text: "Start on mini 4k"
+                width: 200
+                height: parent.height
+                anchors.left: connectADB.right
+                onClicked: {
+                    freeTilsApp.startMini(txtMini4k.text);
+                }
+            }         
+
+            Button {
+                id: deployminiBtn
+                text: "Deploy on mini 4k"
+                width: 200
+                height: parent.height
+                anchors.left: startMini.right
+                onClicked: {
+                    freeTilsApp.deployAppMini(txtMini4k.text);
+                }
             }
         }
     }
 
     Rectangle {
         id: content
-        anchors.top: filter.bottom
+        anchors.top: mini.bottom
         width: root.width
-        height: root.height - folderRow.height - deployRow.height - selectFbx.height - filter.height
+        height: root.height - folderRow.height - deployRow.height - selectFbx.height - mini.height
         border.width: 3
         border.color: contentColor
 

@@ -45,6 +45,21 @@ namespace Freetils {
         }
     }
 
+    void FreeTilsApp::startMini(QString miniIP)
+    {
+        m_FbDeployer->startMini(miniIP);
+    }
+
+    void FreeTilsApp::deployAppMini(QString miniIP)
+    {
+        m_FbDeployer->deployToMini(miniIP);
+    }
+
+    void FreeTilsApp::connectADB(QString miniIP)
+    {
+        m_FbDeployer->connectADB(miniIP);
+    }
+
     void FreeTilsApp::launchQmlScene(QString rootFolder)
     {
         m_QmlScene = true;
