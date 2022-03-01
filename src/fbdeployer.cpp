@@ -88,12 +88,12 @@ namespace Freetils {
 
     }
 
-     void FbDeployer::deployToMini(QString miniIP)
+     void FbDeployer::deployToMini(QString miniIP, QString wsPort)
      {
          //QThread* thread = new QThread();
          QUrl url = QUrl("main.qml");
          qDebug() << "deployToMini to : " << url;
-         QString addr = "ws://"+miniIP+":1337";
+         QString addr = "ws://"+miniIP+":"+wsPort;
          qDebug() << addr;
          QNetworkRequest request = QNetworkRequest(QUrl(addr.toLatin1()));
 
@@ -114,7 +114,7 @@ namespace Freetils {
          //m_ADPSocket->moveToThread(thread);
      }
 
-    void FbDeployer::startMini(QString miniIP)
+    void FbDeployer::startMini(QString miniIP, QString nameActivity)
     {
         m_miniIP = miniIP;
         m_ADB = new QProcess();
@@ -132,7 +132,7 @@ namespace Freetils {
 
         QStringList args;
         QString addr = miniIP;
-        args << "shell" << "am" << "start" << "-a" << "android.intent.action.VIEW" <<  "-d" << "vodservice://6play_qa";
+        args << "shell" << "am" << "start" << "-a" << "android.intent.action.VIEW" <<  "-d" << "vodservice://" + nameActivity;
 
         m_ADB->setProgram("adb");
         m_ADB->setArguments(args);

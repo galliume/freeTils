@@ -33,12 +33,12 @@ namespace Freetils {
         void socketErrDisconnected();
         void socketQmlDisconnected();
         void deploy();
-        void deployToMini(QString miniIP);
+        void deployToMini(QString miniIP, QString wsPort);
         void connectADB(QString miniIP);
         void launchQmlScene();
         void log(QByteArray text, QString lvl = "info");        
         void serve(QString rootFolder, QString fbxIp, QString hostIp);
-        void startMini(QString miniIP);
+        void startMini(QString miniIP, QString nameActivity);
 
         Q_INVOKABLE void stop();
 

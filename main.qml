@@ -24,6 +24,9 @@ Window {
         id: settings
         property string rootDirProject: "click to select the root folder of your project"
         property int selectedBox: 0
+        property string miniIP: "192.168.1.9"
+        property string miniWsPort: "8282"
+        property string miniID: "appliID"
     }
 
     FreeTilsApp {
@@ -309,42 +312,58 @@ Window {
             color: root.menuColor
 
             TextInput {
-                id: txtMini4k
-                text: "192.168.1.9"
-                width: 200
+                id: ipMini4k
+                text: settings.miniIP
+                width: 150
                 height: parent.height
+            }
+
+            TextInput {
+                id: nameActivity
+                text: settings.miniID
+                width: 150
+                height: parent.height
+                anchors.left: ipMini4k.right
+            }
+
+            TextInput {
+                id: wsPort
+                text: settings.miniWsPort
+                width: 150
+                height: parent.height
+                anchors.left: nameActivity.right
             }
 
             Button {
                 id: connectADB
                 text: "Connect ADB"
-                width: 200
+                width: 150
                 height: parent.height
-                anchors.left: txtMini4k.right
+                anchors.left: wsPort.right
                 onClicked: {
-                    freeTilsApp.connectADB(txtMini4k.text);
+                    freeTilsApp.connectADB(ipMini4k.text);
                 }
             }
 
             Button {
                 id: startMini
                 text: "Start on mini 4k"
-                width: 200
+                width: 150
                 height: parent.height
                 anchors.left: connectADB.right
                 onClicked: {
-                    freeTilsApp.startMini(txtMini4k.text);
+                    freeTilsApp.startMini(ipMini4k.text, nameActivity.text);
                 }
             }         
 
             Button {
                 id: deployminiBtn
                 text: "Deploy on mini 4k"
-                width: 200
+                width: 150
                 height: parent.height
                 anchors.left: startMini.right
                 onClicked: {
-                    freeTilsApp.deployAppMini(txtMini4k.text);
+                    freeTilsApp.deployAppMini(ipMini4k.text, wsPort.text);
                 }
             }
         }

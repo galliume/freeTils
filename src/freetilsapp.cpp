@@ -45,14 +45,14 @@ namespace Freetils {
         }
     }
 
-    void FreeTilsApp::startMini(QString miniIP)
+    void FreeTilsApp::startMini(QString miniIP, QString nameActivity)
     {
-        m_FbDeployer->startMini(miniIP);
+        m_FbDeployer->startMini(miniIP, nameActivity);
     }
 
-    void FreeTilsApp::deployAppMini(QString miniIP)
+    void FreeTilsApp::deployAppMini(QString miniIP, QString wsPort)
     {
-        m_FbDeployer->deployToMini(miniIP);
+        m_FbDeployer->deployToMini(miniIP, wsPort);
     }
 
     void FreeTilsApp::connectADB(QString miniIP)
