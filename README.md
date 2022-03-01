@@ -15,9 +15,7 @@
 ## STB already supported :
 - [x] revolution
 - [x] delta
-
-## STB who will be supported :
-- [ ] mini 4K
+- [x] mini 4K
 
 ## OS supported :
 - [x] linux
@@ -36,9 +34,9 @@
 - [x] display logs
 - [x] cleaning and refactoring
 - [x] launch app with qmlscene
+- [x] make it work for the mini 4K android via ADB
 - [ ] control the app via remote keyboard
 - [ ] detect device type (revolution, delta, mini 4k or unsuported)
-- [ ] make it work for the mini 4K android via ADB
 - [ ] filter logs
 - [ ] see if hot reload is possible ?
 - [ ] make home made file server work instead of using PHP internal server
