@@ -309,13 +309,15 @@ Window {
         Rectangle {
             width: root.width - 100
             height: root.menuHeight
-            color: root.menuColor
+            color: "white"
 
             TextInput {
                 id: ipMini4k
                 text: settings.miniIP
                 width: 150
                 height: parent.height
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
             }
 
             TextInput {
@@ -324,6 +326,8 @@ Window {
                 width: 150
                 height: parent.height
                 anchors.left: ipMini4k.right
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
             }
 
             TextInput {
@@ -332,6 +336,8 @@ Window {
                 width: 150
                 height: parent.height
                 anchors.left: nameActivity.right
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
             }
 
             Button {
