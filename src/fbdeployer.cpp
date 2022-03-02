@@ -90,7 +90,6 @@ namespace Freetils {
 
      void FbDeployer::deployToMini(QString miniIP, QString wsPort)
      {
-         //QThread* thread = new QThread();
          QUrl url = QUrl("main.qml");
          qDebug() << "deployToMini to : " << url;
          QString addr = "ws://"+miniIP+":"+wsPort;
@@ -111,7 +110,6 @@ namespace Freetils {
          });
 
          m_ADPSocket->open(request);
-         //m_ADPSocket->moveToThread(thread);
      }
 
     void FbDeployer::startMini(QString miniIP, QString nameActivity)
@@ -179,6 +177,16 @@ namespace Freetils {
         emit logged(msg, "debug");
     }
 
+    void FbDeployer::adbLogErrOutput()
+    {
+        emit logged(m_ADBLog->readAllStandardError(), "debug");
+    }
+
+    void FbDeployer::adbLogOutput()
+    {
+        emit logged(m_ADBLog->readAllStandardOutput(), "debug");
+    }
+
     void FbDeployer::miniStateChanged(QAbstractSocket::SocketState state)
     {
         qDebug() << "state changed " << state;
@@ -198,15 +206,40 @@ namespace Freetils {
 
     void FbDeployer::miniConnected()
     {
+        QString hostIp;
+
+        const QHostAddress &localhost = QHostAddress(QHostAddress::LocalHost);
+        for (const QHostAddress &address: QNetworkInterface::allAddresses()) {
+            if (address.protocol() == QAbstractSocket::IPv4Protocol && address != localhost)
+                 if (address.toString().contains("192.168.1")) {
+                     hostIp = address.toString();
+                 }
+        }
+
         qDebug() << "connected on mini 4K";
         emit logged("connected on mini 4K", "debug");
         QJsonObject params;
-        QString manifestUrl = "http://192.168.1.101:" + QString::number(m_LocalPort) + "/main.qml";
+        QString manifestUrl = "http://" + hostIp + ":" + QString::number(m_LocalPort) + "/main.qml";
+
         qDebug() << "manifest url " << manifestUrl;
         params[QStringLiteral("entry_point")] = manifestUrl;
         QJsonDocument jsonDoc(params);
         qDebug() << jsonDoc;
         m_ADPSocket->sendTextMessage(jsonDoc.toJson());
+
+        m_ADBLog = new QProcess();
+        m_ADBLog->setProcessChannelMode(QProcess::MergedChannels);
+        connect(m_ADBLog, &QProcess::readyReadStandardOutput, this, &FbDeployer::adbLogOutput);
+        connect(m_ADBLog, &QProcess::readyReadStandardError, this, &FbDeployer::adbLogErrOutput);
+
+        QStringList args;
+        QString addr = m_miniIP;
+        args << "logcat" << "VOD Launcher";
+
+        m_ADBLog->setProgram("adb");
+        m_ADBLog->setArguments(args);
+        m_ADBLog->start();
+        m_ADBLog->waitForStarted();
     }
 
     void FbDeployer::launchQmlScene()

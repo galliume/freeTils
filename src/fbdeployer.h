@@ -61,6 +61,8 @@ namespace Freetils {
         QThread* m_WorkerThread = nullptr;
         QThread* m_QmlWorkerThread = nullptr;
         QProcess* m_ADB = nullptr;
+        QProcess* m_ADBLog = nullptr;
+
         QString m_miniIP;
         QWebSocket* m_ADPSocket;
 
@@ -76,6 +78,8 @@ namespace Freetils {
         void adbError();
         void adbStarted();
         void adbOutput();
+        void adbLogOutput();
+        void adbLogErrOutput();
         void adbFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
     signals:
