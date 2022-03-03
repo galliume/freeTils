@@ -68,6 +68,181 @@ namespace Freetils {
         connect(m_Reply, &QNetworkReply::errorOccurred, this, &FbDeployer::errorOccurred);
     }
 
+    void FbDeployer::connectADB(QString miniIP)
+    {
+        m_ADB = new QProcess();
+        m_ADB->setProcessChannelMode(QProcess::MergedChannels);
+        connect(m_ADB, &QProcess::errorOccurred, this, &FbDeployer::adbErrorOccured);
+        connect(m_ADB, &QProcess::started, this, &FbDeployer::adbStarted);
+        connect(m_ADB, &QProcess::readyReadStandardOutput, this, &FbDeployer::adbOutput);
+        connect(m_ADB, &QProcess::readyReadStandardError, this, &FbDeployer::adbError);
+
+        QStringList args;
+        QString addr = miniIP;
+        args << "connect" << miniIP;
+
+        m_ADB->setProgram("adb");
+        m_ADB->setArguments(args);
+        m_ADB->start();
+        m_ADB->waitForStarted();
+
+    }
+
+     void FbDeployer::deployToMini(QString miniIP, QString wsPort)
+     {
+         QUrl url = QUrl("main.qml");
+
+         QString addr = "ws://"+miniIP+":"+wsPort;
+
+         QNetworkRequest request = QNetworkRequest(QUrl(addr.toLatin1()));
+
+         m_ADPSocket = new QWebSocket();
+         connect(m_ADPSocket, &QWebSocket::connected, this, &FbDeployer::miniConnected);
+         connect(m_ADPSocket, &QWebSocket::stateChanged, this, &FbDeployer::miniStateChanged);
+         connect(m_ADPSocket, QOverload<QAbstractSocket::SocketError>::of(&QWebSocket::error),
+             [=](QAbstractSocket::SocketError error){
+             QString msg = "ws connection error ";
+             msg.append(error);
+
+             emit logged(msg, "err");
+
+         });
+
+         m_ADPSocket->open(request);
+     }
+
+    void FbDeployer::startMini(QString miniIP, QString nameActivity)
+    {
+        m_ADBLog = new QProcess();
+        m_ADBLog->setProcessChannelMode(QProcess::MergedChannels);
+        connect(m_ADBLog, &QProcess::readyReadStandardOutput, this, &FbDeployer::adbLogOutput);
+        connect(m_ADBLog, &QProcess::readyReadStandardError, this, &FbDeployer::adbLogErrOutput);
+
+        QStringList argsLog;
+        QString addrLog = m_miniIP;       
+        argsLog << "logcat";
+
+        m_ADBLog->setProgram("adb");
+        m_ADBLog->setArguments(argsLog);
+        m_ADBLog->start();
+        m_ADBLog->waitForStarted();
+
+        m_miniIP = miniIP;
+        m_ADB = new QProcess();
+        m_ADB->setProcessChannelMode(QProcess::MergedChannels);
+        connect(m_ADB, &QProcess::errorOccurred, this, &FbDeployer::adbErrorOccured);
+        connect(m_ADB, &QProcess::started, this, &FbDeployer::adbStarted);
+        connect(m_ADB, &QProcess::finished, this, &FbDeployer::adbFinished);
+        connect(m_ADB, &QProcess::readyReadStandardOutput, this, &FbDeployer::adbOutput);
+        connect(m_ADB, &QProcess::readyReadStandardError, this, &FbDeployer::adbError);
+
+        //adb connect 192.168.1.9
+        //adb shell
+        //pm clear fr.freebox.qmllauncher
+        //am start -a "android.intent.action.VIEW" -d "vodservice://6play"
+
+        QStringList args;
+        QString addr = miniIP;
+        args << "shell" << "am" << "start" << "-a" << "android.intent.action.VIEW" <<  "-d" << "vodservice://" + nameActivity;
+
+        m_ADB->setProgram("adb");
+        m_ADB->setArguments(args);
+        m_ADB->start();
+        m_ADB->waitForStarted();
+    }
+
+    void FbDeployer::adbErrorOccured(QProcess::ProcessError error)
+    {
+        QString msg = "ADB error : ";
+        msg.append(error);
+        emit logged(msg, "err");
+    }
+
+    void FbDeployer::adbError()
+    {
+        QString msg = "ADB error : ";
+        msg.append(m_ADB->readAllStandardError());
+        emit logged(msg, "err");
+    }
+
+    void FbDeployer::adbStarted()
+    {
+        emit logged("ADB started", "debug");
+    }
+
+    void FbDeployer::adbFinished(int exitCode, QProcess::ExitStatus exitStatus)
+    {
+        QString msg = "mini 4k finished ";
+        msg.append(exitCode);
+        msg.append(exitStatus);
+        emit logged(msg, "debug");
+
+    }
+
+    void FbDeployer::adbOutput()
+    {
+        QString msg = "mini 4k ";
+        msg.append( m_ADB->readAllStandardOutput());
+        emit logged(msg, "debug");
+    }
+
+    void FbDeployer::adbLogErrOutput()
+    {
+        QString msg = m_ADBLog->readAllStandardError();
+
+        if (msg.contains("VOD Launcher:")) {
+            emit logged(msg, "err");
+        }
+    }
+
+    void FbDeployer::adbLogOutput()
+    {
+        QString msg = m_ADBLog->readAllStandardOutput();
+
+        if (msg.contains("VOD Launcher:")) {
+            emit logged(msg, "debug");
+        }
+    }
+
+    void FbDeployer::miniStateChanged(QAbstractSocket::SocketState state)
+    {
+        QString msg = "status changed on mini 4K ";
+        msg.append(state);
+        emit logged(msg, "debug");
+    }
+
+    void FbDeployer::miniErrorOccurred(QProcess::ProcessError error)
+    {
+        QString msg = "Error on mini 4K ";
+        msg.append(error);
+        emit logged(msg, "err");
+
+    }
+
+    void FbDeployer::miniConnected()
+    {
+        QString hostIp;
+
+        const QHostAddress &localhost = QHostAddress(QHostAddress::LocalHost);
+        for (const QHostAddress &address: QNetworkInterface::allAddresses()) {
+            if (address.protocol() == QAbstractSocket::IPv4Protocol && address != localhost)
+                 if (address.toString().contains("192.168.1")) {
+                     hostIp = address.toString();
+                 }
+        }
+
+        qDebug() << "connected on mini 4K";
+        emit logged("connected on mini 4K", "debug");
+        QJsonObject params;
+        QString manifestUrl = "http://" + hostIp + ":" + QString::number(m_LocalPort) + "/main.qml";
+
+        qDebug() << "manifest url " << manifestUrl;
+        params[QStringLiteral("entry_point")] = manifestUrl;
+        QJsonDocument jsonDoc(params);
+        qDebug() << jsonDoc;
+        m_ADPSocket->sendTextMessage(jsonDoc.toJson());
+    }
+
     void FbDeployer::launchQmlScene()
     {
         m_QmlWorkerThread = new QThread();

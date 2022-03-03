@@ -24,6 +24,9 @@ Window {
         id: settings
         property string rootDirProject: "click to select the root folder of your project"
         property int selectedBox: 0
+        property string miniIP: "192.168.1.9"
+        property string miniWsPort: "8282"
+        property string miniID: "appliID"
     }
 
     FreeTilsApp {
@@ -282,7 +285,7 @@ Window {
     }
 
     Row {
-        id: filter
+        id: mini
         spacing: 0
         anchors.top: deployRow.bottom
 
@@ -292,7 +295,7 @@ Window {
             color: root.labelColor
 
             Text {
-                text: "Logs filter"
+                text: "Mini 4K"
                 font.family: root.fontFamily
                 font.pointSize: root.fontPointSize
                 color: "white"
@@ -306,21 +309,80 @@ Window {
         Rectangle {
             width: root.width - 100
             height: root.menuHeight
-            color: root.menuColor
+            color: "white"
 
             TextInput {
-                id: txtFilter
-                width: parent.width
+                id: ipMini4k
+                text: settings.miniIP
+                width: 150
                 height: parent.height
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+
+            TextInput {
+                id: nameActivity
+                text: settings.miniID
+                width: 150
+                height: parent.height
+                anchors.left: ipMini4k.right
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+
+            TextInput {
+                id: wsPort
+                text: settings.miniWsPort
+                width: 150
+                height: parent.height
+                anchors.left: nameActivity.right
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+
+            Button {
+                id: connectADB
+                text: "Connect ADB"
+                width: 150
+                height: parent.height
+                anchors.left: wsPort.right
+                onClicked: {
+                    settings.miniIP = ipMini4k.text;
+                    freeTilsApp.connectADB(ipMini4k.text);
+                }
+            }
+
+            Button {
+                id: startMini
+                text: "Start on mini 4k"
+                width: 150
+                height: parent.height
+                anchors.left: connectADB.right
+                onClicked: {
+                    settings.miniID = nameActivity.text;
+                    freeTilsApp.startMini(ipMini4k.text, nameActivity.text);
+                }
+            }         
+
+            Button {
+                id: deployminiBtn
+                text: "Deploy on mini 4k"
+                width: 150
+                height: parent.height
+                anchors.left: startMini.right
+                onClicked: {
+                    settings.miniWsPort = wsPort.text;
+                    freeTilsApp.deployAppMini(ipMini4k.text, wsPort.text);
+                }
             }
         }
     }
 
     Rectangle {
         id: content
-        anchors.top: filter.bottom
+        anchors.top: mini.bottom
         width: root.width
-        height: root.height - folderRow.height - deployRow.height - selectFbx.height - filter.height
+        height: root.height - folderRow.height - deployRow.height - selectFbx.height - mini.height
         border.width: 3
         border.color: contentColor
 

@@ -33,10 +33,13 @@ namespace Freetils {
         void socketErrDisconnected();
         void socketQmlDisconnected();
         void deploy();
+        void deployToMini(QString miniIP, QString wsPort);
+        void connectADB(QString miniIP);
         void launchQmlScene();
-        void log(QByteArray text, QString lvl = "info");
-
+        void log(QByteArray text, QString lvl = "info");        
         void serve(QString rootFolder, QString fbxIp, QString hostIp);
+        void startMini(QString miniIP, QString nameActivity);
+
         Q_INVOKABLE void stop();
 
     private:
@@ -57,12 +60,27 @@ namespace Freetils {
 
         QThread* m_WorkerThread = nullptr;
         QThread* m_QmlWorkerThread = nullptr;
+        QProcess* m_ADB = nullptr;
+        QProcess* m_ADBLog = nullptr;
+
+        QString m_miniIP;
+        QWebSocket* m_ADPSocket;
 
     public slots:
         void resultReady(QPair<bool, QString>status);
         void resultEnded(QPair<bool, QString>status);
         void response(QNetworkReply *reply);
         void errorOccurred(QNetworkReply::NetworkError code);
+        void miniConnected();
+        void miniErrorOccurred(QProcess::ProcessError error);
+        void miniStateChanged(QAbstractSocket::SocketState state);
+        void adbErrorOccured(QProcess::ProcessError error);
+        void adbError();
+        void adbStarted();
+        void adbOutput();
+        void adbLogOutput();
+        void adbLogErrOutput();
+        void adbFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
     signals:
         void operate();
