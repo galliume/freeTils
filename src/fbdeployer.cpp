@@ -114,6 +114,21 @@ namespace Freetils {
 
     void FbDeployer::startMini(QString miniIP, QString nameActivity)
     {
+        m_ADBLog = new QProcess();
+        m_ADBLog->setProcessChannelMode(QProcess::MergedChannels);
+        connect(m_ADBLog, &QProcess::readyReadStandardOutput, this, &FbDeployer::adbLogOutput);
+        connect(m_ADBLog, &QProcess::readyReadStandardError, this, &FbDeployer::adbLogErrOutput);
+
+        QStringList argsLog;
+        QString addrLog = m_miniIP;
+        //@todo filter *:S does not seem to work..
+        argsLog << "logcat" << "bt_btif_gatt:S" << "bt_btif_config:S" << "InputReader:S" << "TvApplication:S" << "DownloadManager:S" << "bt_btif:S" << "bt_bta_gattc:S" << "SntpClient:S" << "nxservice:S" << "EventHub:S" << "OMXClient:S" << "MediaPlayerService:S" << "bomx_core:S" << "BTInformationService:S" << "ViewRootImpl[MainActivity]:S" << "HdmiControlService:S" << "AtvRemote.BLEService:S" << "DisplayPowerController:S" << "WVMExtractor:S" << "MediaBufferGroup:S" << "bomx_android_plugin:S" << "OMXMaster:S" << "DisplayManagerService:S" << "ViewRootImpl:S" << "NexusCecService:S" << "NexusService:S" << "BluetoothGatt:S" << "init_expose_fences:S" << "oemcrypto_brcm_tl:S" << "MountServiceIdler:S" << "ActivityThread:S" << "PowerManagerService:S" << "EntropyMixer:S" << "LockSettingsStorage:S" << "JobStore:S" << "SystemServer:S" << "SyncManager:S" << "B-RecommendationsManager:S" << "FbxRemoteUpdater:S" << "Ranker:S" << "AndroidIME:S" << "ResourceType:S" << "FbxserviceDaemonsClient:S" << "Finsky:S" << "BtGatt.GattService:S" << "AsyncOperation:S" << "FbxdisplayClient[0]:S" << "AdvertisingIdClient:S" << "GmsApplication:S" << "FbxsystemClient[0]:S" << "MultiDex:S" << "System.err:S" << "AppOps:S" << "VoldConnector:S" << "TextServicesManagerService:S" << "KeyValueBackupJob:S" << "SystemServiceManager:S" << "CryptdConnector:S" << "vold:S" << "PackageManager:S" << "MountService:S" << "KeyguardServiceDelegate:S" << "NetworkNotificationManager:S" << "ActivityRecognitionProxy:S" << "WiredAccessoryManager:S" << "ConditionProviders.SCP:S" << "NetlinkEvent:S" << "UsageStatsDatabase:S" << "JobServiceContext:S" << "InputMethodManagerService:S" << "CalendarProvider2:S" << "CalendarSyncAdapter:S" << "ProviderInstaller:S" << "BatteryStatsService:S" << "ProcessStatsService:S" << "NetworkScheduler.ATC:S" << "LocationProviderProxy-network:S" << "NativeCrypto:S" << "NotificationService:S" << "BootReceiver:S" << "GeofenceProxy:S" << "GmsClient:S" << "WifiService:S" << "GeocoderProxy:S" << "UsageStatsService:S" << "NetworkSecurityConfig:S" << "libEGL:S" << "bcm-gr:S" << "GmsClient:S" << "ContentResolver:S" << "UsageStatsService:S" << "GeocoderProxy:S" << "ConditionProviders:S" << "OpenGLRenderer:S" << "InputDispatcher:S" << "Qt:S" << "ApplicationLoaders:S" << "Radio-JNI:S" << "SurfaceFlinger:S" << "System:S" << "ContextImpl:S" << "nxclient:S" << "Avrcp:S" << "BackupManagerService:S" << "UsbAlsaManager:S" << "StatusBarManagerService:S" << "Nat464Xlat:S" << "UsbHostManager:S" << "BroadcastQueue:S" << "WifiConnectivityManager:S" << "WVCdm:S" << "NEXUS:S" << "BluetoothManagerService:S" << "ICU:S" << "init_expose_fences:S" << "chromium:S" << "FbxDaemons:S" << "MediaFocusControl:S" << "ConnectivityService:S" << "AndroidRuntime:S" << "PlayCommon:S" << "GraphicsStats:S" << "GLSActivity:S" << "VC5:S" << "art:S" << "chatty:S" << "Auth:S" << "Glide:S" << "ChromeSync:S" << "ChimeraUtils:S" << "TvSearchApp:S" << "WindowManager:S" << "ActivityManager:E" << "VOD Launcher:V";
+
+        m_ADBLog->setProgram("adb");
+        m_ADBLog->setArguments(argsLog);
+        m_ADBLog->start();
+        m_ADBLog->waitForStarted();
+
         m_miniIP = miniIP;
         m_ADB = new QProcess();
         m_ADB->setProcessChannelMode(QProcess::MergedChannels);
@@ -226,20 +241,6 @@ namespace Freetils {
         QJsonDocument jsonDoc(params);
         qDebug() << jsonDoc;
         m_ADPSocket->sendTextMessage(jsonDoc.toJson());
-
-        m_ADBLog = new QProcess();
-        m_ADBLog->setProcessChannelMode(QProcess::MergedChannels);
-        connect(m_ADBLog, &QProcess::readyReadStandardOutput, this, &FbDeployer::adbLogOutput);
-        connect(m_ADBLog, &QProcess::readyReadStandardError, this, &FbDeployer::adbLogErrOutput);
-
-        QStringList args;
-        QString addr = m_miniIP;
-        args << "logcat" << "VOD Launcher";
-
-        m_ADBLog->setProgram("adb");
-        m_ADBLog->setArguments(args);
-        m_ADBLog->start();
-        m_ADBLog->waitForStarted();
     }
 
     void FbDeployer::launchQmlScene()
