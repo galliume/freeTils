@@ -78,6 +78,7 @@ Window {
             log += "</p> "
 
             logs.append(log);
+            scroll.vertical.position = 1.0 - scroll.vertical.size;
         }
     }
 
@@ -348,31 +349,20 @@ Window {
                 anchors.left: wsPort.right
                 onClicked: {
                     settings.miniIP = ipMini4k.text;
-                    freeTilsApp.connectADB(ipMini4k.text);
+                    settings.miniID = nameActivity.text;
+                    settings.miniWsPort = wsPort.text;
+                    freeTilsApp.deployTo4k(ipMini4k.text, wsPort.text, nameActivity.text);
                 }
             }
 
             Button {
-                id: startMini
-                text: "Start on mini 4k"
+                id: deployMini
+                text: "Deploy to mini 4k"
                 width: 150
                 height: parent.height
                 anchors.left: connectADB.right
                 onClicked: {
-                    settings.miniID = nameActivity.text;
-                    freeTilsApp.startMini(ipMini4k.text, nameActivity.text);
-                }
-            }         
-
-            Button {
-                id: deployminiBtn
-                text: "Deploy on mini 4k"
-                width: 150
-                height: parent.height
-                anchors.left: startMini.right
-                onClicked: {
-                    settings.miniWsPort = wsPort.text;
-                    freeTilsApp.deployAppMini(ipMini4k.text, wsPort.text);
+                    freeTilsApp.deployAppMini();
                 }
             }
         }
@@ -387,6 +377,7 @@ Window {
         border.color: contentColor
 
         ScrollView {
+            id: scroll
             anchors.fill: parent
 
             TextArea {

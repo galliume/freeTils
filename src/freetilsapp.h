@@ -17,10 +17,9 @@ namespace Freetils {
         Q_INVOKABLE void detectDevices();
         Q_INVOKABLE void deployApp(QString rootFolder, int currentIndex);
         Q_INVOKABLE void launchQmlScene(QString rootFolder);
-        Q_INVOKABLE void deployAppMini(QString miniIP, QString wsPort);
         Q_INVOKABLE void stop();
-        Q_INVOKABLE void connectADB(QString miniIP);
-        Q_INVOKABLE void startMini(QString miniIP, QString nameActivity);
+        Q_INVOKABLE void deployTo4k(QString miniIP, QString wsPort, QString nameActivity);
+        Q_INVOKABLE void deployAppMini();
 
     private:
         void newDeviceDetected(QString deviceAddress, QString hostAddress);
@@ -28,6 +27,7 @@ namespace Freetils {
         void serverStopped(QPair<bool, QString>status);
         void logger(QString log, QString lvl);
         QString cleanRootFolder(QString rootFolder);
+        void startMini();
 
     private:
         FbDetector* m_FbDetector = nullptr;
@@ -36,6 +36,9 @@ namespace Freetils {
         bool m_QmlScene = false;
         bool m_QmlSceneRunning = false;
         bool m_DeployedToStb = false;
+        QString m_MiniIP;
+        QString m_MiniWsPort;
+        QString m_MiniNameActivity;
 
     signals:
         void refreshStbList(QString deviceAddress, QString iconAddress);

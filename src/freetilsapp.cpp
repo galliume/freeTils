@@ -11,6 +11,7 @@ namespace Freetils {
         connect(m_FbDeployer, &FbDeployer::deployed, this, &FreeTilsApp::serverDeployed);
         connect(m_FbDeployer, &FbDeployer::stopped, this, &FreeTilsApp::serverStopped);
         connect(m_FbDeployer, &FbDeployer::logged, this, &FreeTilsApp::logger);
+        connect(m_FbDeployer, &FbDeployer::adbConnected, this, &FreeTilsApp::startMini);
     }
 
     void FreeTilsApp::detectDevices()
@@ -45,19 +46,23 @@ namespace Freetils {
         }
     }
 
-    void FreeTilsApp::startMini(QString miniIP, QString nameActivity)
+    void FreeTilsApp::deployTo4k(QString miniIP, QString wsPort, QString nameActivity)
     {
-        m_FbDeployer->startMini(miniIP, nameActivity);
+        m_MiniIP = miniIP;
+        m_MiniWsPort = wsPort;
+        m_MiniNameActivity = nameActivity;
+
+        m_FbDeployer->connectADB(m_MiniIP);
     }
 
-    void FreeTilsApp::deployAppMini(QString miniIP, QString wsPort)
+    void FreeTilsApp::startMini()
     {
-        m_FbDeployer->deployToMini(miniIP, wsPort);
+        m_FbDeployer->startMini(m_MiniIP, m_MiniNameActivity);
     }
 
-    void FreeTilsApp::connectADB(QString miniIP)
+    void FreeTilsApp::deployAppMini()
     {
-        m_FbDeployer->connectADB(miniIP);
+        m_FbDeployer->deployToMini(m_MiniIP, m_MiniWsPort);
     }
 
     void FreeTilsApp::launchQmlScene(QString rootFolder)

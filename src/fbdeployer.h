@@ -43,6 +43,9 @@ namespace Freetils {
         Q_INVOKABLE void stop();
 
     private:
+        void stopADB();
+
+    private:
         const quint16 m_LocalPort = 9000;
         QString m_FbxIP;
         QString m_HostIP;
@@ -52,7 +55,6 @@ namespace Freetils {
 
         QNetworkInterface m_Interface;
         QHostAddress m_Address;
-        QRemoteObjectNode m_RemoteNode;
         QTcpServer* m_TcpServer = nullptr;
         QTcpSocket* m_Out = nullptr;
         QTcpSocket* m_Err = nullptr;
@@ -64,7 +66,7 @@ namespace Freetils {
         QProcess* m_ADBLog = nullptr;
 
         QString m_miniIP;
-        QWebSocket* m_ADPSocket;
+        QWebSocket* m_ADBSocket;
 
     public slots:
         void resultReady(QPair<bool, QString>status);
@@ -90,6 +92,7 @@ namespace Freetils {
         void operateQML();
         void qmlQuit();
         void logged(QString log, QString lvl);
+        void adbConnected();
     };
 }
 #endif // FBDEPLOYER_H
